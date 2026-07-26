@@ -10,7 +10,7 @@ Goals
 
 - [x] Local Speech-to-Text
 - [x] Local LLM
-- [] Local Text-to-Speech
+- [x] Local Text-to-Speech [macOS]
 - [] Optional Vision
 - [] Low latency
 - [] Privacy-first design
@@ -65,4 +65,18 @@ This repository documents my journey learning edge AI and building practical AI 
 
 ### Day 6
 
+Microphone
+    ↓
+Speech-to-Text ✅
+
 Successfully transcribed a recorded voice sample locally using whisper.cpp and the Whisper base.en model.
+
+### Day 7
+
+Text
+  ↓
+Local Text-to-Speech ✅
+  ↓
+Speaker
+
+Validated local text-to-speech using pyttsx3

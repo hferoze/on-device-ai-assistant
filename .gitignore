@@ -9,6 +9,9 @@ __pycache__/
 #Whisper
 experiments/speech-to-text/whisper.cpp/
 
+#TTS
+experiments/text-to-speech/.venv/
+
 # Distribution / packaging
 .Python
 build/
