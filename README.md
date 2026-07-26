@@ -11,9 +11,9 @@ Goals
 - [x] Local Speech-to-Text
 - [x] Local LLM
 - [x] Local Text-to-Speech [macOS]
-- [] Optional Vision
-- [] Low latency
-- [] Privacy-first design
+- Optional Vision
+- Low latency
+- Privacy-first design
 
 Architecture
 
