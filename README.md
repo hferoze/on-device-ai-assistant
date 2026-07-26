@@ -17,18 +17,14 @@ Goals
 
 Architecture
 
-Microphone
-      │
-      ▼
+Microphone 
+<br>&darr;<br>
 Speech-to-Text
-      │
-      ▼
+<br>&darr;<br>
 Local LLM
-      │
-      ▼
+<br>&darr;<br>
 Text-to-Speech
-      │
-      ▼
+<br>&darr;<br>
 Speaker
 
 Roadmap
@@ -66,7 +62,7 @@ This repository documents my journey learning edge AI and building practical AI 
 ### Day 6
 
 Microphone
-    ↓
+<br>&darr;<br>
 Speech-to-Text ✅
 
 Successfully transcribed a recorded voice sample locally using whisper.cpp and the Whisper base.en model.
@@ -74,9 +70,9 @@ Successfully transcribed a recorded voice sample locally using whisper.cpp and t
 ### Day 7
 
 Text
-  ↓
+<br>&darr;<br>
 Local Text-to-Speech ✅
-  ↓
+<br>&darr;<br>
 Speaker
 
 Validated local text-to-speech using pyttsx3
