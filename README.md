@@ -8,12 +8,12 @@ The assistant will perform speech recognition, language understanding, and speec
 
 Goals
 
-* Local Speech-to-Text
-* Local LLM
-* Local Text-to-Speech
-* Optional Vision
-* Low latency
-* Privacy-first design
+[] Local Speech-to-Text
+[x] Local LLM
+[] Local Text-to-Speech
+[] Optional Vision
+[] Low latency
+[] Privacy-first design
 
 Architecture
 
