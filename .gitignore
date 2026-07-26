@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+#Whisper
+experiments/speech-to-text/whisper.cpp/
+
 # Distribution / packaging
 .Python
 build/

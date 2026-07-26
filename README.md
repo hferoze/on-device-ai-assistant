@@ -8,12 +8,12 @@ The assistant will perform speech recognition, language understanding, and speec
 
 Goals
 
-[] Local Speech-to-Text
-[x] Local LLM
-[] Local Text-to-Speech
-[] Optional Vision
-[] Low latency
-[] Privacy-first design
+- [x] Local Speech-to-Text
+- [x] Local LLM
+- [] Local Text-to-Speech
+- [] Optional Vision
+- [] Low latency
+- [] Privacy-first design
 
 Architecture
 
@@ -62,3 +62,7 @@ Current Status
 Why This Project?
 
 This repository documents my journey learning edge AI and building practical AI systems on NVIDIA Jetson hardware. The focus is not only implementation, but also understanding the product and system design tradeoffs involved in deploying AI at the edge.
+
+### Day 6
+
+Successfully transcribed a recorded voice sample locally using whisper.cpp and the Whisper base.en model.
