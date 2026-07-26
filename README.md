@@ -1,2 +1,64 @@
-# on-device-ai-assistant
-Building a fully local multimodal AI assistant on NVIDIA Jetson Orin Nano.
+On-Device AI Assistant
+
+Overview
+
+This project explores how to build a completely local multimodal AI assistant on the NVIDIA Jetson Orin Nano.
+
+The assistant will perform speech recognition, language understanding, and speech synthesis without relying on cloud APIs.
+
+Goals
+
+* Local Speech-to-Text
+* Local LLM
+* Local Text-to-Speech
+* Optional Vision
+* Low latency
+* Privacy-first design
+
+Architecture
+
+Microphone
+      │
+      ▼
+Speech-to-Text
+      │
+      ▼
+Local LLM
+      │
+      ▼
+Text-to-Speech
+      │
+      ▼
+Speaker
+
+Roadmap
+
+Project 1
+
+On-Device AI Assistant
+
+Project 2
+
+Vision + LLM
+
+Project 3
+
+AI Performance Analysis
+
+Project 4
+
+Smart Glasses Reference Architecture
+
+Current Status
+
+* Project defined
+* Repository created
+* Local LLM running
+* Speech-to-Text
+* Text-to-Speech
+* Jetson deployment
+* Vision integration
+
+Why This Project?
+
+This repository documents my journey learning edge AI and building practical AI systems on NVIDIA Jetson hardware. The focus is not only implementation, but also understanding the product and system design tradeoffs involved in deploying AI at the edge.
