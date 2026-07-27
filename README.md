@@ -88,28 +88,35 @@ Completed the first end-to-end recorded voice assistant pipeline.
 
 ## Architecture
 
-Recorded WAV question
-        │
-        ▼
-┌──────────────────────┐
-│ whisper.cpp          │
-│ Speech-to-Text       │
-└──────────┬───────────┘
-           │ Transcribed text
-           ▼
-┌──────────────────────┐
-│ Ollama               │
-│ Local LLM            │
-└──────────┬───────────┘
-           │ Generated response
-           ▼
-┌──────────────────────┐
-│ pyttsx3              │
-│ Text-to-Speech       │
-└──────────┬───────────┘
-           │
-           ▼
-      Spoken answer
+```mermaid
+graph LR
+    A[Recorded WAV] --> B[Whisper.cpp]
+    B --> C[Ollama]
+    C --> D[pyttsx3]
+    D --> E[Speaker]
+```
+
+## Setup instructions
+
+Add this to the README, adjusting the model and paths if yours differ:
+
+```markdown
+## Setup
+
+## Requirements
+
+- Python 3.12
+- Ollama
+- `llama3.2:3b`
+- `whisper.cpp`
+- A 16 kHz mono WAV recording
+
+## Python environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 
 ## Current Limitations
 
