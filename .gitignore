@@ -9,8 +9,14 @@ __pycache__/
 #Whisper
 experiments/speech-to-text/whisper.cpp/
 
+# macOS
+.DS_Store
+
 #TTS
 experiments/text-to-speech/.venv/
+
+#Project env
+.venv
 
 # Distribution / packaging
 .Python

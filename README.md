@@ -8,12 +8,17 @@ The assistant will perform speech recognition, language understanding, and speec
 
 Goals
 
-- [x] Local Speech-to-Text
-- [x] Local LLM
-- [x] Local Text-to-Speech [macOS]
-- Optional Vision
-- Low latency
-- Privacy-first design
+## Project Status
+
+- [x] Local language model through Ollama
+- [x] Local speech-to-text through whisper.cpp
+- [x] Offline text-to-speech through pyttsx3
+- [x] Typed question pipeline
+- [x] Prerecorded voice pipeline
+- Live microphone input
+- Performance measurements
+- Jetson deployment
+- Camera integration
 
 Architecture
 
@@ -57,7 +62,7 @@ Current Status
 
 Why This Project?
 
-This repository documents my journey learning edge AI and building practical AI systems on NVIDIA Jetson hardware. The focus is not only implementation, but also understanding the product and system design tradeoffs involved in deploying AI at the edge.
+This repository documents learning edge AI and building practical AI systems on NVIDIA Jetson hardware. The focus is not only implementation, but also understanding the product and system design tradeoffs involved in deploying AI at the edge.
 
 ### Day 6
 
@@ -76,3 +81,41 @@ Local Text-to-Speech ✅
 Speaker
 
 Validated local text-to-speech using pyttsx3
+
+### Day 8
+
+Completed the first end-to-end recorded voice assistant pipeline.
+
+## Architecture
+
+Recorded WAV question
+        │
+        ▼
+┌──────────────────────┐
+│ whisper.cpp          │
+│ Speech-to-Text       │
+└──────────┬───────────┘
+           │ Transcribed text
+           ▼
+┌──────────────────────┐
+│ Ollama               │
+│ Local LLM            │
+└──────────┬───────────┘
+           │ Generated response
+           ▼
+┌──────────────────────┐
+│ pyttsx3              │
+│ Text-to-Speech       │
+└──────────┬───────────┘
+           │
+           ▼
+      Spoken answer
+
+## Current Limitations
+
+- Processes one prerecorded WAV file per run.
+- Uses operating-system text-to-speech rather than a portable neural TTS model.
+- Requires manual installation of Ollama and whisper.cpp.
+- Has not yet been benchmarked on edge hardware.
+- Does not retain conversation history.
+
