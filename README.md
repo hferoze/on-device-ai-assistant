@@ -6,8 +6,6 @@ This project explores how to build a completely local multimodal AI assistant on
 
 The assistant will perform speech recognition, language understanding, and speech synthesis without relying on cloud APIs.
 
-Goals
-
 ## Project Status
 
 - [x] Local language model through Ollama
