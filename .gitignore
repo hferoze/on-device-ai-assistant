@@ -15,6 +15,9 @@ experiments/speech-to-text/whisper.cpp/
 #TTS
 experiments/text-to-speech/.venv/
 
+#Recordings
+recordings/
+
 #Project env
 .venv
 
