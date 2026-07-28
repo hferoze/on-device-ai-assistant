@@ -87,13 +87,13 @@ Validated offline text-to-speech using pyttsx3.
 Connected every major AI component into a complete offline assistant.
 
 Recorded WAV
-      ↓
+      →
 Whisper.cpp
-      ↓
+      →
 Ollama
-      ↓
+      →
 pyttsx3
-      ↓
+      →
 Speaker
 
 ⸻
@@ -103,15 +103,15 @@ Speaker
 Replaced the manually supplied WAV file with live microphone recording.
 
 Microphone
-      ↓
+      →
 Recorded WAV
-      ↓
+      →
 Whisper.cpp
-      ↓
+      →
 Ollama
-      ↓
+      →
 pyttsx3
-      ↓
+      →
 Speaker
 
 The assistant now records audio directly from the microphone before running the complete local AI pipeline.
@@ -127,17 +127,17 @@ The assistant now remains running, allowing multiple questions to be asked witho
 Current workflow:
 
 Start Assistant
-      ↓
+      →
 Record Question
-      ↓
+      →
 Whisper.cpp
-      ↓
+      →
 Ollama
-      ↓
+      →
 pyttsx3
-      ↓
+      →
 Speak Response
-      ↓
+      →
 Wait for Next Question
 
 ⸻
