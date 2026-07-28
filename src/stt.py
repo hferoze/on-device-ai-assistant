@@ -24,7 +24,7 @@ WHISPER_MODEL = (
 )
 
 
-def transcribe(audio_path: str) -> str:
+def transcribe_audio(audio_path: str) -> str:
     """Transcribe an audio file using local whisper.cpp."""
 
     audio_file = Path(audio_path)
@@ -81,7 +81,7 @@ def transcribe(audio_path: str) -> str:
 
 
 if __name__ == "__main__":
-    text = transcribe(
+    text = transcribe_audio(
         "experiments/speech-to-text/jfk.wav"
     )
     print(f"[STT] Transcription: {text}")
