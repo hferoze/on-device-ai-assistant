@@ -1,6 +1,6 @@
-On-Device AI Assistant
+# On-Device AI Assistant
 
-Overview
+### Overview
 
 This project explores how to build a completely local multimodal AI assistant on the NVIDIA Jetson Orin Nano.
 
@@ -8,7 +8,7 @@ The assistant performs speech recognition, language understanding, and speech sy
 
 ⸻
 
-Project Status
+## Project Status
 
 * [x] Local language model using Ollama
 * [x] Local speech-to-text using whisper.cpp
@@ -26,27 +26,27 @@ Project Status
 
 ⸻
 
-Roadmap
+## Roadmap
 
-Project 1
+### Project 1
 
 On-Device AI Assistant
 
 Build a completely local multimodal voice assistant capable of speech recognition, language understanding, and speech synthesis.
 
-Project 2
+### Project 2
 
 Vision + LLM
 
 Combine a camera with an LLM to build an AI assistant capable of understanding both speech and visual input.
 
-Project 3
+### Project 3
 
 AI Performance Analysis
 
 Benchmark Edge AI workloads, analyze latency, memory usage, and throughput, and compare performance across desktop and Jetson platforms.
 
-Project 4
+### Project 4
 
 Smart Glasses Reference Architecture
 
@@ -54,19 +54,19 @@ Design and prototype the software architecture for an AI-powered smart glasses p
 
 ⸻
 
-Why This Project?
+## Why This Project?
 
-This repository documents my journey of learning Edge AI while building practical AI systems on NVIDIA Jetson hardware.
+This repository documents learning Edge AI while building practical AI systems on NVIDIA Jetson hardware.
 
-The goal is not simply to connect existing AI components, but to understand how production Edge AI systems are designed, optimized, and deployed. Throughout the project I explore system architecture, AI inference pipelines, latency, memory usage, hardware acceleration, and deployment tradeoffs that are important when building real-world embedded AI products.
+The goal is to understand how production Edge AI systems are designed, optimized, and deployed. Throughout the project I explore system architecture, AI inference pipelines, latency, memory usage, hardware acceleration, and deployment tradeoffs that are important when building real-world embedded AI products.
 
 ⸻
 
-Project 1
+### Project 1
 
 On-Device AI Assistant
 
-Step 1 — Local Speech Recognition
+#### Step 1 — Local Speech Recognition
 
 Microphone / WAV → Speech-to-Text
 
@@ -74,7 +74,7 @@ Successfully transcribed recorded speech locally using whisper.cpp and the Whisp
 
 ⸻
 
-Step 2 — Local Text-to-Speech
+#### Step 2 — Local Text-to-Speech
 
 Text → Speech → Speaker
 
@@ -82,7 +82,7 @@ Validated offline text-to-speech using pyttsx3.
 
 ⸻
 
-Step 3 — First End-to-End Voice Pipeline
+#### Step 3 — First End-to-End Voice Pipeline
 
 Connected every major AI component into a complete offline assistant.
 
@@ -98,7 +98,7 @@ Speaker
 
 ⸻
 
-Step 4 — Live Microphone Assistant
+#### Step 4 — Live Microphone Assistant
 
 Replaced the manually supplied WAV file with live microphone recording.
 
@@ -118,7 +118,7 @@ The assistant now records audio directly from the microphone before running the 
 
 ⸻
 
-Step 5 — Interactive Assistant
+#### Step 5 — Interactive Assistant
 
 Converted the assistant from a single-run script into an interactive application.
 
@@ -142,7 +142,7 @@ Wait for Next Question
 
 ⸻
 
-Step 6 — Performance Measurements
+#### Step 6 — Performance Measurements
 
 Added timing measurements for every stage of the inference pipeline.
 
@@ -158,7 +158,7 @@ The first request is noticeably slower because AI models must be initialized and
 
 ⸻
 
-Current Progress
+### Current Progress
 
 Current assistant capabilities:
 
@@ -173,7 +173,7 @@ The project is currently running on macOS for quick development before deploymen
 
 ⸻
 
-Next Milestone
+### Next Milestone
 
 Deploy the complete assistant to the NVIDIA Jetson Orin Nano and evaluate:
 
@@ -185,7 +185,7 @@ Deploy the complete assistant to the NVIDIA Jetson Orin Nano and evaluate:
 
 ⸻
 
-Setup Instructions
+### Setup Instructions
 
 Requirements
 
@@ -205,7 +205,7 @@ python -m pip install -r requirements.txt
 
 ⸻
 
-Current Limitations
+### Current Limitations
 
 * Uses file-based audio recording instead of streaming audio.
 * Uses the operating system speech engine (pyttsx3) rather than a neural TTS model.
