@@ -13,7 +13,7 @@ The assistant will perform speech recognition, language understanding, and speec
 - [x] Offline text-to-speech through pyttsx3
 - [x] Typed question pipeline
 - [x] Prerecorded voice pipeline
-- Live microphone input
+- [x] Live microphone input
 - Performance measurements
 - Jetson deployment
 - Camera integration
@@ -60,6 +60,12 @@ Validated local text-to-speech using pyttsx3
 Completed the first end-to-end recorded voice assistant pipeline.
 
 [Recorded WAV] --> [Whisper.cpp] --> [Ollama] --> [pyttsx3] --> [Speaker]
+
+### Step 4
+
+Completed the first end-to-end recorded voice assistant pipeline.
+
+[Microphone] --> [Recorded WAV] --> [Whisper.cpp] --> [Ollama] --> [pyttsx3] --> [Speaker]
 
 ## Setup instructions
 
