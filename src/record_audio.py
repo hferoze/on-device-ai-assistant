@@ -27,7 +27,7 @@ def calculate_audio_level(audio_block: np.ndarray) -> float:
     return float(np.sqrt(np.mean(audio_float**2)))
 
 
-def record_audio(output_file: Path = DEFAULT_OUTPUT_FILE) -> Path:
+def record_audio(output_file: Path = DEFAULT_OUTPUT_FILE, chunk_callback=None,) -> Path:
     """
     Record microphone audio and stop automatically after speech ends.
 
@@ -64,6 +64,9 @@ def record_audio(output_file: Path = DEFAULT_OUTPUT_FILE) -> Path:
                 print("Audio warning: input overflow")
 
             audio_chunks.append(audio_block.copy())
+
+            if chunk_callback is not None:
+                chunk_callback(audio_block.copy())
 
             audio_level = calculate_audio_level(audio_block)
             elapsed_time = time.perf_counter() - recording_start

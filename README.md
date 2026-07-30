@@ -21,8 +21,9 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [x] Context awareness (Conversation memory)
 * [x] Push-to-talk microphone recording
 * [x] Automatic silence detection (End of speech detection)
+* [x] Partial streaming transcription
+* [ ] Persistent streaming STT engine
 * [ ] Wake-word detection
-* [ ] Streaming speech recognition
 * [ ] Jetson Orin Nano deployment
 * [ ] Camera integration
 
@@ -182,6 +183,22 @@ After recording begins, the assistant waits for speech and automatically stops a
 
 ⸻
 
+#### Step 10 — Partial streaming transcription
+
+Microphone audio chunks
+      ↓
+Incremental buffering
+      ↓
+Partial transcription
+      ↓
+Final transcription after silence
+      ↓
+Ollama → TTS
+
+Note: First launch takes signification amount of time since model is not yet loaded in the memory. 
+
+⸻
+
 ### Current Progress
 
 Current assistant capabilities:
@@ -195,6 +212,7 @@ Current assistant capabilities:
 * Context awareness
 * Push to talk
 * Automatic Silence Detection
+* Partial streaming transcription
 
 The project is currently running on macOS for quick development before deployment to the NVIDIA Jetson Orin Nano.
 
@@ -226,14 +244,17 @@ Requirements
 
 Python Environment
 
+```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+```
 
 ⸻
 
 ### Current Limitations
 
+* First launch takes a long time [Local LLM Cold start limitation]
 * Uses file-based audio recording instead of streaming audio.
 * Uses the operating system speech engine (pyttsx3) rather than a neural TTS model.
 * Requires manual installation of Ollama and whisper.cpp.

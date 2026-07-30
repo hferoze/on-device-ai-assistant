@@ -5,7 +5,7 @@ from stt import transcribe_audio
 from llm import generate_response
 from tts import speak
 from memory import ConversationMemory
-
+from streaming_stt import StreamingTranscriber
 
 def main():
 
@@ -15,6 +15,7 @@ def main():
     print("=" * 50)
 
     memory = ConversationMemory(max_messages=6)
+    streaming_transcriber = StreamingTranscriber()
 
     while True:
         choice = input("\n[R] Record   [Q] Quit : ").strip().lower()
@@ -30,12 +31,16 @@ def main():
 
             total_start = time.perf_counter()
 
+            streaming_transcriber.clear()
+
             try:
-                audio_file = record_audio()
+                audio_file = record_audio(chunk_callback=streaming_transcriber.add_chunk)
             except Exception as error:
                 print(f"Recording failed: {error}")
                 continue
 
+            print("\nFinalizing transcription...")
+            
             stt_start = time.perf_counter()
             question = transcribe_audio(str(audio_file))
             stt_time = time.perf_counter() - stt_start
