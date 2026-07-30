@@ -231,6 +231,6 @@ python -m pip install -r requirements.txt
 * Uses the operating system speech engine (pyttsx3) rather than a neural TTS model.
 * Requires manual installation of Ollama and whisper.cpp.
 * No wake-word detection.
-* No conversation memory.
+* ~~No conversation memory.~~
 * No visual understanding or camera integration.
 * Jetson deployment and benchmarking are still in progress.
