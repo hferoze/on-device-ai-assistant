@@ -18,15 +18,13 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [x] Live microphone input
 * [x] Interactive assistant loop
 * [x] Pipeline latency measurements
-* [x] Context awareness
+* [x] Context awareness (Conversation memory)
 * [x] Push-to-talk microphone recording
-* [ ] Automatic silence detection
+* [x] Automatic silence detection (End of speech detection)
 * [ ] Wake-word detection
-* Jetson Orin Nano deployment
-* Camera integration
-* Conversation memory
-* Streaming speech recognition
-* Wake-word detection
+* [ ] Streaming speech recognition
+* [ ] Jetson Orin Nano deployment
+* [ ] Camera integration
 
 ⸻
 
@@ -176,6 +174,14 @@ Replaced the fixed-duration microphone recording with manual start and stop cont
 
 ⸻
 
+#### Step 9 — Automatic Silence Detection
+
+Added automatic end-of-speech detection to the microphone input pipeline.
+
+After recording begins, the assistant waits for speech and automatically stops after approximately 1.2 seconds of silence. This removes the need to manually stop each recording while keeping the existing file-based speech recognition pipeline.
+
+⸻
+
 ### Current Progress
 
 Current assistant capabilities:
@@ -188,6 +194,7 @@ Current assistant capabilities:
 * Basic latency benchmarking
 * Context awareness
 * Push to talk
+* Automatic Silence Detection
 
 The project is currently running on macOS for quick development before deployment to the NVIDIA Jetson Orin Nano.
 

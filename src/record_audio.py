@@ -1,4 +1,5 @@
 from pathlib import Path
+import time
 
 import numpy as np
 import sounddevice as sd
@@ -7,35 +8,89 @@ from scipy.io.wavfile import write
 
 SAMPLE_RATE = 16000
 CHANNELS = 1
+BLOCK_DURATION = 0.1
+
+SILENCE_THRESHOLD = 500
+SILENCE_DURATION = 1.2
+MAX_RECORDING_DURATION = 30
+WAIT_FOR_SPEECH_TIMEOUT = 8
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT_FILE = PROJECT_ROOT / "recordings" / "question.wav"
 
 
+def calculate_audio_level(audio_block: np.ndarray) -> float:
+    """Calculate the RMS volume level of an audio block."""
+
+    audio_float = audio_block.astype(np.float32)
+
+    return float(np.sqrt(np.mean(audio_float**2)))
+
+
 def record_audio(output_file: Path = DEFAULT_OUTPUT_FILE) -> Path:
-    """Record microphone audio until the user presses Enter."""
+    """
+    Record microphone audio and stop automatically after speech ends.
+
+    Recording begins after the user presses Enter. The function waits for
+    speech and stops after SILENCE_DURATION seconds of silence.
+    """
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    audio_chunks = []
+    audio_chunks: list[np.ndarray] = []
 
-    def audio_callback(indata, frames, time_info, status) -> None:
-        if status:
-            print(f"Audio warning: {status}")
+    speech_detected = False
+    silence_start: float | None = None
 
-        audio_chunks.append(indata.copy())
+    block_size = int(SAMPLE_RATE * BLOCK_DURATION)
 
-    input("\nPress ENTER to start recording...")
+    input("\nPress ENTER, then begin speaking...")
 
-    print("Recording. Press ENTER to stop.")
+    print("Listening...")
+
+    recording_start = time.perf_counter()
 
     with sd.InputStream(
         samplerate=SAMPLE_RATE,
         channels=CHANNELS,
         dtype="int16",
-        callback=audio_callback,
-    ):
-        input()
+        blocksize=block_size,
+    ) as stream:
+
+        while True:
+            audio_block, overflowed = stream.read(block_size)
+
+            if overflowed:
+                print("Audio warning: input overflow")
+
+            audio_chunks.append(audio_block.copy())
+
+            audio_level = calculate_audio_level(audio_block)
+            elapsed_time = time.perf_counter() - recording_start
+
+            if audio_level >= SILENCE_THRESHOLD:
+                if not speech_detected:
+                    print("Speech detected...")
+
+                speech_detected = True
+                silence_start = None
+
+            elif speech_detected:
+                if silence_start is None:
+                    silence_start = time.perf_counter()
+
+                silence_length = time.perf_counter() - silence_start
+
+                if silence_length >= SILENCE_DURATION:
+                    print("Silence detected. Stopping recording.")
+                    break
+
+            if not speech_detected and elapsed_time >= WAIT_FOR_SPEECH_TIMEOUT:
+                raise RuntimeError("No speech was detected.")
+
+            if elapsed_time >= MAX_RECORDING_DURATION:
+                print("Maximum recording duration reached.")
+                break
 
     if not audio_chunks:
         raise RuntimeError("No audio was recorded.")
