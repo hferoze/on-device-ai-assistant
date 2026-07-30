@@ -6,7 +6,7 @@ This project explores how to build a completely local multimodal AI assistant on
 
 The assistant performs speech recognition, language understanding, and speech synthesis entirely on-device without relying on cloud APIs. The project focuses on understanding the architecture, performance, and deployment tradeoffs involved in Edge AI systems.
 
-⸻
+#
 
 ## Project Status
 
@@ -27,7 +27,7 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [ ] Jetson Orin Nano deployment
 * [ ] Camera integration
 
-⸻
+#
 
 ## Roadmap
 
@@ -55,7 +55,7 @@ Smart Glasses Reference Architecture
 
 Design and prototype the software architecture for an AI-powered smart glasses platform using local multimodal AI.
 
-⸻
+#
 
 ## Why This Project?
 
@@ -63,7 +63,7 @@ This repository documents learning Edge AI while building practical AI systems o
 
 The goal is to understand how production Edge AI systems are designed, optimized, and deployed. Throughout the project I explore system architecture, AI inference pipelines, latency, memory usage, hardware acceleration, and deployment tradeoffs that are important when building real-world embedded AI products.
 
-⸻
+#
 
 ### Project 1
 
@@ -186,18 +186,24 @@ After recording begins, the assistant waits for speech and automatically stops a
 #### Step 10 — Partial streaming transcription
 
 Microphone audio chunks
-      ↓
+      →
 Incremental buffering
-      ↓
+      →
 Partial transcription
-      ↓
+      →
 Final transcription after silence
-      ↓
-Ollama → TTS
+      →
+Ollama 
+      → 
+TTS
+
+Added chunk-based microphone processing and partial transcription while the user is still speaking.
+The current implementation periodically transcribes accumulated audio and displays an interim result. A final transcription is still produced after end-of-speech detection.
+This validates the streaming architecture, although Whisper is currently restarted for each partial transcription.
 
 Note: First launch takes signification amount of time since model is not yet loaded in the memory. 
 
-⸻
+#
 
 ### Current Progress
 
@@ -216,7 +222,7 @@ Current assistant capabilities:
 
 The project is currently running on macOS for quick development before deployment to the NVIDIA Jetson Orin Nano.
 
-⸻
+#
 
 ### Next Milestone
 
@@ -228,7 +234,7 @@ Deploy the complete assistant to the NVIDIA Jetson Orin Nano and evaluate:
 * Power consumption
 * Overall Edge AI performance compared to desktop execution
 
-⸻
+#
 
 ### Setup Instructions
 
@@ -250,7 +256,7 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-⸻
+#
 
 ### Current Limitations
 
