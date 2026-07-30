@@ -1,34 +1,47 @@
 from pathlib import Path
 
+import numpy as np
 import sounddevice as sd
 from scipy.io.wavfile import write
 
 
 SAMPLE_RATE = 16000
-DEFAULT_DURATION = 5
+CHANNELS = 1
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT_FILE = PROJECT_ROOT / "recordings" / "question.wav"
 
 
-def record_audio(
-    output_file: Path = DEFAULT_OUTPUT_FILE,
-    duration: int = DEFAULT_DURATION,
-) -> Path:
-    """Record microphone audio and save it as a mono 16 kHz WAV file."""
+def record_audio(output_file: Path = DEFAULT_OUTPUT_FILE) -> Path:
+    """Record microphone audio until the user presses Enter."""
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"Recording for {duration} seconds...")
+    audio_chunks = []
 
-    audio = sd.rec(
-        int(duration * SAMPLE_RATE),
+    def audio_callback(indata, frames, time_info, status) -> None:
+        if status:
+            print(f"Audio warning: {status}")
+
+        audio_chunks.append(indata.copy())
+
+    input("\nPress ENTER to start recording...")
+
+    print("Recording. Press ENTER to stop.")
+
+    with sd.InputStream(
         samplerate=SAMPLE_RATE,
-        channels=1,
+        channels=CHANNELS,
         dtype="int16",
-    )
+        callback=audio_callback,
+    ):
+        input()
 
-    sd.wait()
+    if not audio_chunks:
+        raise RuntimeError("No audio was recorded.")
+
+    audio = np.concatenate(audio_chunks, axis=0)
+
     write(output_file, SAMPLE_RATE, audio)
 
     print(f"Recording saved to: {output_file}")

@@ -18,6 +18,10 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [x] Live microphone input
 * [x] Interactive assistant loop
 * [x] Pipeline latency measurements
+* [x] Context awareness
+* [x] Push-to-talk microphone recording
+* [ ] Automatic silence detection
+* [ ] Wake-word detection
 * Jetson Orin Nano deployment
 * Camera integration
 * Conversation memory
@@ -158,6 +162,20 @@ The first request is noticeably slower because AI models must be initialized and
 
 ⸻
 
+#### Step 7 — Context Awareness
+
+Added conversation memory to give context to the assistent of the ongoing session
+
+Max context size is set to 6 (modifiable)
+
+⸻
+
+#### Step 8 — Push to Talk
+
+Replaced the fixed-duration microphone recording with manual start and stop controls. The user can now speak for any reasonable duration before sending the recording through the local AI pipeline.
+
+⸻
+
 ### Current Progress
 
 Current assistant capabilities:
@@ -168,6 +186,8 @@ Current assistant capabilities:
 * Offline text-to-speech
 * Interactive microphone-based conversations
 * Basic latency benchmarking
+* Context awareness
+* Push to talk
 
 The project is currently running on macOS for quick development before deployment to the NVIDIA Jetson Orin Nano.
 

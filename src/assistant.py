@@ -4,6 +4,7 @@ from record_audio import record_audio
 from stt import transcribe_audio
 from llm import generate_response
 from tts import speak
+from memory import ConversationMemory
 
 
 def main():
@@ -12,6 +13,8 @@ def main():
     print("On-Device AI Assistant")
     print("Press Ctrl+C to quit")
     print("=" * 50)
+
+    memory = ConversationMemory(max_messages=6)
 
     while True:
         choice = input("\n[R] Record   [Q] Quit : ").strip().lower()
@@ -27,7 +30,11 @@ def main():
 
             total_start = time.perf_counter()
 
-            audio_file = record_audio()
+            try:
+                audio_file = record_audio()
+            except Exception as error:
+                print(f"Recording failed: {error}")
+                continue
 
             stt_start = time.perf_counter()
             question = transcribe_audio(str(audio_file))
@@ -40,10 +47,14 @@ def main():
             print(f"You: {question}")
 
             llm_start = time.perf_counter()
-            response = generate_response(question)
+            prompt = memory.build_prompt(question)
+            response = generate_response(prompt)
             llm_time = time.perf_counter() - llm_start
 
             print(f"\nAssistant: {response}\n")
+
+            memory.add_user_message(question)
+            memory.add_assistant_message(response)
 
             tts_start = time.perf_counter()
             speak(response)
