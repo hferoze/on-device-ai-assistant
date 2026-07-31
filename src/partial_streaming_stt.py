@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 import tempfile
 
@@ -8,7 +9,7 @@ from stt import transcribe_audio
 
 
 class StreamingTranscriber:
-    """Buffers microphone chunks and periodically transcribes them."""
+    """Buffers audio and periodically produces partial transcriptions."""
 
     def __init__(
         self,
@@ -19,6 +20,7 @@ class StreamingTranscriber:
         self.transcription_interval = transcription_interval
         self.audio_chunks: list[np.ndarray] = []
         self.last_transcription_size = 0
+        self.partial_transcription_count = 0
 
     def add_chunk(self, audio_chunk: np.ndarray) -> None:
         self.audio_chunks.append(audio_chunk)
@@ -49,10 +51,22 @@ class StreamingTranscriber:
         try:
             write(temporary_path, self.sample_rate, audio)
 
+            start_time = time.perf_counter()
+
             text = transcribe_audio(str(temporary_path)).strip()
 
+            transcription_time = time.perf_counter() - start_time
+            self.partial_transcription_count += 1
+
             if text:
-                print(f"\rPartial: {text}", end="", flush=True)
+                print(
+                    f"\nPartial {self.partial_transcription_count}: {text}"
+                )
+
+            print(
+                "Partial STT latency: "
+                f"{transcription_time:.2f} seconds"
+            )
 
         finally:
             temporary_path.unlink(missing_ok=True)
@@ -60,3 +74,4 @@ class StreamingTranscriber:
     def clear(self) -> None:
         self.audio_chunks.clear()
         self.last_transcription_size = 0
+        self.partial_transcription_count = 0

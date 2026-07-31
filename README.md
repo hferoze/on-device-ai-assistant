@@ -6,8 +6,6 @@ This project explores how to build a completely local multimodal AI assistant on
 
 The assistant performs speech recognition, language understanding, and speech synthesis entirely on-device without relying on cloud APIs. The project focuses on understanding the architecture, performance, and deployment tradeoffs involved in Edge AI systems.
 
-#
-
 ## Project Status
 
 * [x] Local language model using Ollama
@@ -26,8 +24,6 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
 * [ ] Camera integration
-
-#
 
 ## Roadmap
 
@@ -54,8 +50,6 @@ Benchmark Edge AI workloads, analyze latency, memory usage, and throughput, and 
 Smart Glasses Reference Architecture
 
 Design and prototype the software architecture for an AI-powered smart glasses platform using local multimodal AI.
-
-#
 
 ## Why This Project?
 
@@ -202,6 +196,12 @@ The current implementation periodically transcribes accumulated audio and displa
 This validates the streaming architecture, although Whisper is currently restarted for each partial transcription.
 
 Note: First launch takes signification amount of time since model is not yet loaded in the memory. 
+
+⸻
+
+Measured partial-transcription latency in the current chunk-based streaming pipeline.
+
+The current implementation launches whisper.cpp repeatedly and retranscribes the accumulated audio for every partial result. Latency increases as the recording becomes longer.
 
 #
 

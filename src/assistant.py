@@ -5,7 +5,7 @@ from stt import transcribe_audio
 from llm import generate_response
 from tts import speak
 from memory import ConversationMemory
-from streaming_stt import StreamingTranscriber
+from partial_streaming_stt import StreamingTranscriber
 
 def main():
 
