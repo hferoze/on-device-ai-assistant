@@ -20,6 +20,7 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [x] Push-to-talk microphone recording
 * [x] Automatic silence detection (End of speech detection)
 * [x] Partial streaming transcription
+* [x] Persistent streaming transcription [whisper experiment]
 * [ ] Persistent streaming STT engine
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
