@@ -203,6 +203,113 @@ Measured partial-transcription latency in the current chunk-based streaming pipe
 
 The current implementation launches whisper.cpp repeatedly and retranscribes the accumulated audio for every partial result. Latency increases as the recording becomes longer.
 
+⸻
+
+#### Step 11 — Persistent streaming transcription [whisper experiment]
+
+Build and test whisper.cpp streaming example. This reduces repeated model-startup overhead and provides a foundation for persistent speech recognition.
+
+1. Install sdl2
+```bash 
+brew install sdl2
+```
+
+2. Rebuild whisper.cpp with streaming enabled
+```bash 
+cd experiments/speech-to-text/whisper.cpp
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DWHISPER_SDL2=ON \
+  -DWHISPER_BUILD_EXAMPLES=ON
+
+cmake --build build -j
+```
+
+Note: If there is an error on MAC with Apple silicon, make sure the terminal is running in under arm64. 
+```bash 
+cd experiments/speech-to-text/whisper.cpp
+uname -m
+arch 
+- If either says x86_64 then run the following command
+arch -arm64 zsh (Set to build for arm64)
+arch (Must say arm64)
+rm -rf build
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_OSX_ARCHITECTURES=arm64 \
+  -DWHISPER_SDL2=ON \
+  -DWHISPER_BUILD_EXAMPLES=ON
+cmake --build build -j
+```
+
+3. Verify the binary is available
+```bash
+file build/bin/whisper-stream
+./build/bin/whisper-stream --help
+```
+
+4. List available microphones
+```bash
+cat << 'EOF' > list_audio.c
+#include <SDL2/SDL.h>
+#include <stdio.h>
+int main() {
+    SDL_Init(SDL_INIT_AUDIO);
+    int count = SDL_GetNumAudioDevices(0);
+    printf("Playback devices: %d\n", count);
+    for(int i = 0; i < count; i++) {
+        printf("  [%d] %s\n", i, SDL_GetAudioDeviceName(i, 0));
+    }
+    SDL_Quit();
+    return 0;
+}
+EOF
+clang list_audio.c -o list_audio -I/opt/homebrew/include -L/opt/homebrew/lib -lSDL2 && ./list_audio
+```
+
+5. Run persistent transcription
+
+```bash
+
+./build/bin/whisper-stream \
+  -m models/ggml-base.en.bin \
+  --step 500 \
+  --length 5000 \
+  --keep 200 \
+  --capture 0
+
+```
+
+6. Create a shell script to keep it simple e.g.
+
+```bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+WHISPER_DIR="experiments/speech-to-text/whisper.cpp"
+MODEL="$WHISPER_DIR/models/ggml-base.en.bin"
+STREAM="$WHISPER_DIR/build/bin/whisper-stream"
+
+if [[ ! -x "$STREAM" ]]; then
+    echo "whisper-stream was not found: $STREAM"
+    exit 1
+fi
+
+if [[ ! -f "$MODEL" ]]; then
+    echo "Whisper model was not found: $MODEL"
+    exit 1
+fi
+
+"$STREAM" \
+    -m "$MODEL" \
+    --step 500 \
+    --length 5000 \
+    --keep 200 \
+    --capture 0
+
+```
+
 #
 
 ### Current Progress
