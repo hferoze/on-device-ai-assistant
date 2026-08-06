@@ -311,6 +311,56 @@ fi
 
 ```
 
+⸻
+
+#### Step 12 — Persistent streaming transcription [pywhispercpp]
+
+Implemented persistent streaming transcription pipeline using pywhispercpp. With this solution we load whisper model only once to continuously transcribe.
+
+```bash
+
+python src/assistant_p.py
+
+```
+
+
+                (Startup - runs once)
+
+           Load Whisper Model (pywhispercpp)
+                <br> &darr; <br>
+           Initialize Conversation Memory
+                <br> &darr; <br>
+                Wait for User<br> 
+                      │<br> 
+────────────────────────────────────────────────────────<br> 
+
+Press ENTER
+<br> &darr; <br>
+Automatic Silence Detection
+(record_audio.py)
+<br> &darr; <br>
+Save question.wav
+<br> &darr; <br>
+Persistent Whisper Model
+(pywhispercpp)
+<br> &darr; <br>
+Speech-to-Text
+<br> &darr; <br>
+Conversation Memory
+(build prompt)
+<br> &darr; <br>
+Ollama (Local LLM)
+<br> &darr; <br>
+Update Conversation Memory
+<br> &darr; <br>
+pyttsx3
+<br> &darr; <br>
+Speaker
+<br> &darr; <br>
+Wait 0.4 s
+<br> &darr; <br>
+Back to "Press ENTER"
+
 #
 
 ### Current Progress
@@ -355,6 +405,7 @@ Requirements
 * pyttsx3
 * sounddevice
 * scipy
+* pywhispercpp
 
 Python Environment
 

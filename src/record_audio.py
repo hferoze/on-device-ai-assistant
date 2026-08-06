@@ -44,10 +44,6 @@ def record_audio(output_file: Path = DEFAULT_OUTPUT_FILE, chunk_callback=None,) 
 
     block_size = int(SAMPLE_RATE * BLOCK_DURATION)
 
-    input("\nPress ENTER, then begin speaking...")
-
-    print("Listening...")
-
     recording_start = time.perf_counter()
 
     with sd.InputStream(
