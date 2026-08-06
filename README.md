@@ -21,6 +21,7 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [x] Automatic silence detection (End of speech detection)
 * [x] Partial streaming transcription
 * [x] Persistent streaming transcription [whisper experiment]
+* [x] Persistent streaming transcription [pywhispercpp]
 * [ ] Persistent streaming STT engine
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
@@ -198,8 +199,6 @@ This validates the streaming architecture, although Whisper is currently restart
 
 Note: First launch takes signification amount of time since model is not yet loaded in the memory. 
 
-⸻
-
 Measured partial-transcription latency in the current chunk-based streaming pipeline.
 
 The current implementation launches whisper.cpp repeatedly and retranscribes the accumulated audio for every partial result. Latency increases as the recording becomes longer.
@@ -318,48 +317,62 @@ fi
 Implemented persistent streaming transcription pipeline using pywhispercpp. With this solution we load whisper model only once to continuously transcribe.
 
 ```bash
-
 python src/assistant_p.py
-
 ```
 
 
-                (Startup - runs once)
+
+```
+                   (Startup - runs once)
 
            Load Whisper Model (pywhispercpp)
-                <br> &darr; <br>
+                      │
+                      ▼
            Initialize Conversation Memory
-                <br> &darr; <br>
-                Wait for User<br> 
-                      │<br> 
-────────────────────────────────────────────────────────<br> 
+                      │
+                      ▼
+                Wait for User
+                      │
+────────────────────────────────────────────────────────
 
 Press ENTER
-<br> &darr; <br>
+      │
+      ▼
 Automatic Silence Detection
 (record_audio.py)
-<br> &darr; <br>
+      │
+      ▼
 Save question.wav
-<br> &darr; <br>
+      │
+      ▼
 Persistent Whisper Model
 (pywhispercpp)
-<br> &darr; <br>
+      │
+      ▼
 Speech-to-Text
-<br> &darr; <br>
+      │
+      ▼
 Conversation Memory
 (build prompt)
-<br> &darr; <br>
+      │
+      ▼
 Ollama (Local LLM)
-<br> &darr; <br>
+      │
+      ▼
 Update Conversation Memory
-<br> &darr; <br>
+      │
+      ▼
 pyttsx3
-<br> &darr; <br>
+      │
+      ▼
 Speaker
-<br> &darr; <br>
-Wait 0.4 s
-<br> &darr; <br>
+      │
+      ▼
+Wait
+      │
+      ▼
 Back to "Press ENTER"
+```
 
 #
 
