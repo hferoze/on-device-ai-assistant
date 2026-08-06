@@ -22,7 +22,6 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [x] Partial streaming transcription
 * [x] Persistent streaming transcription [whisper experiment]
 * [x] Persistent streaming transcription [pywhispercpp]
-* [ ] Persistent streaming STT engine
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
 * [ ] Camera integration
