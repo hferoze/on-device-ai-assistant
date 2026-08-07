@@ -22,9 +22,11 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [x] Partial streaming transcription
 * [x] Persistent streaming transcription [whisper experiment]
 * [x] Persistent streaming transcription [pywhispercpp]
+* [x] Camera capture experiments
+* [ ] Camera integration
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
-* [ ] Camera integration
+
 
 ## Roadmap
 
@@ -372,6 +374,11 @@ Wait
       ▼
 Back to "Press ENTER"
 ```
+⸻
+
+#### Step 13 — Camera capture experiments
+
+Did few experiments with camera capture → YOLO → LLM description.
 
 #
 
@@ -389,6 +396,8 @@ Current assistant capabilities:
 * Push to talk
 * Automatic Silence Detection
 * Partial streaming transcription
+* Persistent streaming trascription
+* Camera capture and description experiment
 
 The project is currently running on macOS for quick development before deployment to the NVIDIA Jetson Orin Nano.
 
@@ -418,6 +427,9 @@ Requirements
 * sounddevice
 * scipy
 * pywhispercpp
+* requests
+* opencv-python
+* ultralytics
 
 Python Environment
 
@@ -427,12 +439,26 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
+Ollama
+
+Install from the official Ollama website
+
+Whisper
+
+```bash
+git clone https://github.com/ggml-org/whisper.cpp.git
+cd whisper.cpp
+sh ./models/download-ggml-model.sh base.en [ Downloads base model ]
+cmake -B build
+cmake --build build -j --config Release
+```
+
 #
 
 ### Current Limitations
 
-* First launch takes a long time [Local LLM Cold start limitation]
-* Uses file-based audio recording instead of streaming audio.
+* ~~First launch takes a long time [Local LLM Cold start limitation]~~
+* ~~Uses file-based audio recording instead of streaming audio.~~
 * Uses the operating system speech engine (pyttsx3) rather than a neural TTS model.
 * Requires manual installation of Ollama and whisper.cpp.
 * No wake-word detection.

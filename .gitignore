@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+# YOLO models
+*.pt
+
+# Models
+*.bin
+
+# Captured images
+captures/
+
 #Whisper
 experiments/speech-to-text/whisper.cpp/
 

@@ -3,3 +3,5 @@ pyttsx3
 sounddevice
 scipy
 pywhispercpp
+opencv-python
+ultralytics
