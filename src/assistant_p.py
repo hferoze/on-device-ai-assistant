@@ -6,7 +6,6 @@ from persistent_stt import PersistentSTT
 from record_audio import record_audio
 from tts import speak
 
-
 def main() -> None:
     memory = ConversationMemory(max_messages=6)
 

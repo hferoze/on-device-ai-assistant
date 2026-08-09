@@ -23,7 +23,8 @@ The assistant performs speech recognition, language understanding, and speech sy
 * [x] Persistent streaming transcription [whisper experiment]
 * [x] Persistent streaming transcription [pywhispercpp]
 * [x] Camera capture experiments
-* [ ] Camera integration
+* [x] Camera integration
+* [x] Multimodal assistant
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
 
@@ -380,6 +381,41 @@ Back to "Press ENTER"
 
 Did few experiments with camera capture → YOLO → LLM description.
 
+#### Step 14 — Camera integration / Multimodal assistant
+
+Added multimodal functionality. Certain commands from the user trigger vision path as described by the flow diagram below.
+
+```
+Voice Question
+      ↓
+Persistent Whisper
+      ↓
+Intent Check
+      ↓
+ ┌───────────────┐
+ │               │
+ ▼               ▼
+Vision         Normal
+Command        Question
+ │               │
+Camera          LLM
+ ↓               │
+YOLO             │
+ ↓               │
+LLM Description  │
+ └───────┬───────┘
+         ↓
+       TTS
+
+```
+
+```bash
+
+cd on-device-ai-assistant
+python -m src.assistant_multimodal
+
+```
+
 #
 
 ### Current Progress
@@ -398,6 +434,7 @@ Current assistant capabilities:
 * Partial streaming transcription
 * Persistent streaming trascription
 * Camera capture and description experiment
+* Camera integration / Multimodal assistant
 
 The project is currently running on macOS for quick development before deployment to the NVIDIA Jetson Orin Nano.
 
@@ -463,5 +500,5 @@ cmake --build build -j --config Release
 * Requires manual installation of Ollama and whisper.cpp.
 * No wake-word detection.
 * ~~No conversation memory.~~
-* No visual understanding or camera integration.
+* ~~No visual understanding or camera integration.~~
 * Jetson deployment and benchmarking are still in progress.
