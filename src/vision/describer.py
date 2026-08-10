@@ -1,12 +1,12 @@
 from pathlib import Path
-import sys
-from src.vision.detector import detect_objects
+
 from src.llm import generate_response
+from src.vision.detector import detect_objects
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_IMAGE = PROJECT_ROOT / "captures" / "frame.jpg"
 
-def describe_scene(image_path: Path = DEFAULT_IMAGE) -> str:
+def describe_scene(image_path: Path, question: str) -> str:
+    """Answer a vision-related question using YOLO detections."""
+
     detections = detect_objects(image_path)
 
     if not detections:
@@ -15,15 +15,12 @@ def describe_scene(image_path: Path = DEFAULT_IMAGE) -> str:
     object_names = [item["class"] for item in detections]
 
     prompt = (
-        "You are describing what a camera sees based only on object detection results. "
-        "Do not invent objects that are not listed. "
-        "Write one short natural sentence.\n\n"
-        f"Detected objects: {', '.join(object_names)}"
+        "Answer the user's question using only the object detection results below. "
+        "Do not invent objects or visual details that are not supported by the detections. "
+        "If the detections are insufficient to answer confidently, say so clearly.\n\n"
+        f"Detected objects: {', '.join(object_names)}\n"
+        f"User question: {question}\n"
+        "Answer briefly:"
     )
 
     return generate_response(prompt)
-
-
-if __name__ == "__main__":
-    description = describe_scene()
-    print(f"\nScene description: {description}")

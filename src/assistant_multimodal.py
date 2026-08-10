@@ -63,7 +63,7 @@ def main() -> None:
 
                 print("[Assistant] Analyzing image...")
 
-                response = describe_scene(image_path)
+                response = describe_scene(image_path, question)
 
             else:
                 prompt = memory.build_prompt(question)
