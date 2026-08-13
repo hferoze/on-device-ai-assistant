@@ -1,6 +1,7 @@
 from pathlib import Path
 import base64
 import requests
+import time
 
 from src.llm import generate_response
 from src.vision.detector import detect_objects
@@ -34,17 +35,22 @@ def describe_scene(image_path: Path, question: str) -> str:
         "keep_alive": "30m",
     }
 
-    response = requests.post(
-        OLLAMA_URL,
-        json=payload,
-        timeout=180,
-    )
+    try:
+        response = requests.post(
+            OLLAMA_URL,
+            json=payload,
+            timeout=180,
+        )
+        response.raise_for_status()
 
-    response.raise_for_status()
+        result = response.json()
+    
+        return result["message"]["content"].strip()
 
-    result = response.json()
-
-    return result["message"]["content"].strip()
+    except requests.Timeout as error:
+        raise RuntimeError(
+            "Vision model timed out. The model may still be loading."
+        ) from error  
 
 def describe_objects_in_scene(image_path: Path, question: str) -> str:
     """Answer a vision-related question using YOLO detections."""

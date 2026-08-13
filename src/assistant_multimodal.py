@@ -54,15 +54,17 @@ def main() -> None:
             print(f"You: {question}")
 
             print("[Assistant] Thinking...")
-            llm_start = time.perf_counter()
 
+            model_start = time.perf_counter()
+            is_vision_pipeline = False
             if is_vision_request(question):
+                is_vision_pipeline = True
+                
                 print("[Assistant] Capturing image...")
                 image_path = capture_frame()
 
                 print("[Assistant] Analyzing image...")
                 response = describe_scene(image_path, question)
-
             else:
                 prompt = memory.build_prompt(question)
 
@@ -71,7 +73,7 @@ def main() -> None:
                 response = generate_response(prompt)
 
            
-            llm_time = time.perf_counter() - llm_start
+            model_time = time.perf_counter() - model_start
 
             memory.add_user_message(question)
             memory.add_assistant_message(response)
@@ -79,18 +81,20 @@ def main() -> None:
             print(f"Assistant: {response}")
 
             print("[Assistant] Speaking...")
-            tts_start = time.perf_counter()
             speak(response)
-            tts_time = time.perf_counter() - tts_start
 
             # Microphone is closed while TTS is running.
             time.sleep(0.4)
 
             print("\nPerformance")
             print("----------------")
-            print(f"STT: {stt_time:.2f}s")
-            print(f"LLM: {llm_time:.2f}s")
-            print(f"TTS: {tts_time:.2f}s")
+            print(f"Whisper STT [small.en]: {stt_time:.2f}s")
+            if is_vision_pipeline:
+                print(f"VLM [qwen2.5vl:3b]: {model_time:.2f}s")
+                print(f"Multimodal pipeline [STT + VL]: {(stt_time+model_time):.2f}s")
+            else:
+                print(f"LLM [llama3.2:3b]: {model_time:.2f}s")
+                print(f"Voice pipeline [STT + LLM]: {(stt_time+model_time):.2f}s")
 
     except KeyboardInterrupt:
         print("\n[Assistant] Stopped.")
