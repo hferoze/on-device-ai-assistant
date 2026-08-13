@@ -58,11 +58,9 @@ def main() -> None:
 
             if is_vision_request(question):
                 print("[Assistant] Capturing image...")
-
                 image_path = capture_frame()
 
                 print("[Assistant] Analyzing image...")
-
                 response = describe_scene(image_path, question)
 
             else:
