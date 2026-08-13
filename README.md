@@ -416,6 +416,32 @@ python -m src.assistant_multimodal
 
 ```
 
+⸻
+
+#### Step 15 — Multimodal analyzer assistant
+
+Instead of simple object detection using YOLO, incorporated Qwen2.5-VL to properly describe the image.
+
+```
+Voice question
+      ↓
+Persistent Whisper
+      ↓
+Vision intent
+      ↓
+Camera
+      ↓
+Qwen2.5-VL 3B
+      ↓
+Visual reasoning
+      ↓
+TTS
+
+```
+
+Note: Cold start takes significant amount of time.
+
+
 #
 
 ### Current Progress
