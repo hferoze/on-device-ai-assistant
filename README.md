@@ -461,34 +461,20 @@ Cold-start measurements include model loading and initialization. Warm measureme
 
 ```
 
-During testing, Ollama initially ran CPU-only under an x86_64/Rosetta environment. After rebooting 100% GPU became available. Benchmarks below were collected after restoring GPU acceleration.
+During testing, Ollama initially ran CPU-only. After rebooting 100% GPU became available. Benchmarks below were collected after restoring GPU acceleration.
 
 ##### Results
 
-```
-
 | Pipeline / Component | Cold | Warm 1 | Warm 2 | Warm 3 |
-
-|---|---:|---:|---:|---:|
-
+| -------------------- | ---: | -----: | -----: | -----: |
 | **Voice Assistant** | | | | |
-
 | Whisper STT | 0.30s | 0.69s | 0.30s | 0.31s |
-
 | Llama3.2:3b | 21.10s | 0.95s | 1.86s | 1.56s |
-
 | **Response Ready** | **21.40s** | **1.64s** | **2.16s** | **1.87s** |
-
 | **Multimodal Assistant** | | | | |
-
 | Whisper STT | 0.30s | 0.66s | 0.37s | 0.33s |
-
 | Qwen2.5-VL:3b | 39.45s | 19.16s | 19.11s | 19.04s |
-
 | **Response Ready** | **39.75s** | **19.82s** | **19.48s** | **19.37s** |
-
-
-```
 
 #### Observations
 
