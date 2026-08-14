@@ -4,7 +4,7 @@ from threading import Lock
 from pywhispercpp.model import Model
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 WHISPER_MODEL = (
     PROJECT_ROOT

@@ -1,85 +1,66 @@
 import time
 
-from record_audio import record_audio
-from stt import transcribe_audio
-from llm import generate_response
-from tts import speak
-from memory import ConversationMemory
-from partial_streaming_stt import StreamingTranscriber
+from src.llm import generate_response
+from src.memory import ConversationMemory
+from src.audio.stt import PersistentSTT
+from src.audio.recorder import record_audio
+from src.audio.tts import speak
 
-def main():
-
-    print("=" * 50)
-    print("On-Device AI Assistant")
-    print("Press Ctrl+C to quit")
-    print("=" * 50)
-
+def main() -> None:
     memory = ConversationMemory(max_messages=6)
-    streaming_transcriber = StreamingTranscriber()
 
-    while True:
-        choice = input("\n[R] Record   [Q] Quit : ").strip().lower()
+    # Loaded once and reused.
+    stt = PersistentSTT()
 
-        if choice == "q":
-            break
+    print("On-Device AI Assistant")
+    print("Press Ctrl+C to quit.")
 
-        if choice != "r":
-            continue
+    try:
+        while True:
+            input("\nPress ENTER to ask a question...")
 
-        try:
-            print("\nListening...\n")
+            print("[Assistant] Listening...")
+            audio_file = record_audio()
 
-            total_start = time.perf_counter()
-
-            streaming_transcriber.clear()
-
-            try:
-                audio_file = record_audio(chunk_callback=streaming_transcriber.add_chunk)
-            except Exception as error:
-                print(f"Recording failed: {error}")
-                continue
-
-            print("\nFinalizing transcription...")
-            
+            print("[Assistant] Transcribing...")
             stt_start = time.perf_counter()
-            question = transcribe_audio(str(audio_file))
+            question = stt.transcribe(audio_file)
             stt_time = time.perf_counter() - stt_start
 
-            if not question.strip():
-                print("No speech detected.")
+            if not question:
+                print("[Assistant] No speech detected.")
                 continue
 
             print(f"You: {question}")
 
-            llm_start = time.perf_counter()
             prompt = memory.build_prompt(question)
+
+            print("[Assistant] Thinking...")
+            llm_start = time.perf_counter()
             response = generate_response(prompt)
             llm_time = time.perf_counter() - llm_start
-
-            print(f"\nAssistant: {response}\n")
 
             memory.add_user_message(question)
             memory.add_assistant_message(response)
 
+            print(f"Assistant: {response}")
+
+            print("[Assistant] Speaking...")
             tts_start = time.perf_counter()
             speak(response)
             tts_time = time.perf_counter() - tts_start
 
-            processing_time = stt_time + llm_time
-            
-            total_time = time.perf_counter() - total_start
+            # Microphone is closed while TTS is running.
+            time.sleep(0.4)
 
             print("\nPerformance")
-            print("-------------------------")
-            print(f"STT : {stt_time:.2f}s")
-            print(f"LLM : {llm_time:.2f}s")
-            print(f"TTS : {tts_time:.2f}s")
-            print(f"Processing latency: {processing_time:.2f} seconds")
-            print(f"Total : {total_time:.2f}s")
+            print("----------------")
+            print(f"STT: {stt_time:.2f}s")
+            print(f"LLM: {llm_time:.2f}s")
+            print(f"TTS: {tts_time:.2f}s")
 
-        except KeyboardInterrupt:
-            print("\nExiting assistant...")
-            break
+    except KeyboardInterrupt:
+        print("\n[Assistant] Stopped.")
 
 
 if __name__ == "__main__":

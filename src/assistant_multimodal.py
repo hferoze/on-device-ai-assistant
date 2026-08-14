@@ -2,9 +2,9 @@ import time
 
 from src.llm import generate_response
 from src.memory import ConversationMemory
-from src.persistent_stt import PersistentSTT
-from src.record_audio import record_audio
-from src.tts import speak
+from src.audio.stt import PersistentSTT
+from src.audio.recorder import record_audio
+from src.audio.tts import speak
 from src.vision.camera import capture_frame
 from src.vision.describer import describe_scene
 

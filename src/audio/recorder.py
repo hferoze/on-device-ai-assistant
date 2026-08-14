@@ -15,7 +15,7 @@ SILENCE_DURATION = 1.2
 MAX_RECORDING_DURATION = 30
 WAIT_FOR_SPEECH_TIMEOUT = 8
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_OUTPUT_FILE = PROJECT_ROOT / "recordings" / "question.wav"
 
 

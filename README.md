@@ -458,7 +458,6 @@ Cold-start measurements include model loading and initialization. Warm measureme
 - Python: 3.13
 - STT: Whisper small.en
 - TTS: pyttsx3
-
 ```
 
 During testing, Ollama initially ran CPU-only. After rebooting 100% GPU became available. Benchmarks below were collected after restoring GPU acceleration.
