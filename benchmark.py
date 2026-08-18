@@ -2,6 +2,8 @@ import platform
 import statistics
 import time
 from pathlib import Path
+import csv
+from datetime import datetime
 
 from src.audio.stt import PersistentSTT
 from src.llm import generate_response
@@ -17,6 +19,45 @@ LLM_PROMPT = "Explain edge AI in one short sentence."
 VLM_PROMPT = "Describe what you see in this image in one short sentence."
 
 WARM_RUNS = 3
+
+def save_results(results):
+    output_dir = PROJECT_ROOT / "benchmarks"
+    output_dir.mkdir(exist_ok=True)
+
+    filename = output_dir / "benchmark_results.csv"
+
+    file_exists = filename.exists()
+
+    with filename.open("a", newline="") as file:
+        writer = csv.writer(file)
+
+        if not file_exists:
+            writer.writerow([
+                "timestamp",
+                "os",
+                "architecture",
+                "component",
+                "cold",
+                "warm1",
+                "warm2",
+                "warm3",
+                "warm_average",
+            ])
+
+        for component, times in results.items():
+            writer.writerow([
+                datetime.now().isoformat(timespec="seconds"),
+                platform.system(),
+                platform.machine(),
+                component,
+                f"{times[0]:.2f}",
+                f"{times[1]:.2f}",
+                f"{times[2]:.2f}",
+                f"{times[3]:.2f}",
+                f"{statistics.mean(times[1:]):.2f}",
+            ])
+
+    print(f"\nResults saved to: {filename}")
 
 
 def timed_call(func, *args, **kwargs):
@@ -130,6 +171,14 @@ def main():
     print_summary("Whisper STT", stt_times)
     print_summary("Llama 3.2", llm_times)
     print_summary("Qwen2.5-VL 3B", vlm_times)
+
+    results = {
+        "Whisper STT": stt_times,
+        "Llama 3.2": llm_times,
+        "Qwen2.5-VL 3B": vlm_times,
+    }
+
+    save_results(results)
 
 
 if __name__ == "__main__":
