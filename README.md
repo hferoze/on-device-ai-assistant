@@ -494,6 +494,32 @@ Run the benchmark with:
 python benchmark.py
 ```
 
+The benchmark currently measures:
+
+* Whisper speech-to-text latency
+* Llama 3.2 language model latency
+* Qwen2.5-VL 3B vision-language model latency
+* Cold-start inference latency
+* Three warm inference runs
+* Average warm inference latency
+
+The benchmark also records the execution environment, including:
+
+* OS
+* CPU architecture
+* Model name
+* Ollama model size
+* CPU/GPU execution split
+* Model context size
+
+Results are automatically appended to benchmarks/benchmark_results.csv This provides a repeatable baseline that can be executed on different edge platforms.
+
+Current baseline:
+macOS → Whisper + Llama 3.2 + Qwen2.5-VL
+
+Next target:
+NVIDIA Jetson Orin Nano → same workloads → latency, memory, GPU utilization, and power analysis.
+
 #
 
 ### Current Progress
