@@ -483,6 +483,17 @@ During testing, Ollama initially ran CPU-only. After rebooting 100% GPU became a
 - TTS time is excluded because the pyttsx3 measurement reflects spoken response length rather than TTS inference performance.
 - These measurements establish a baseline for comparison with NVIDIA Jetson deployment.
 
+
+#### Step 17 — Automated Benchmarking
+
+A reusable benchmarking framework is included to measure AI workload performance across different hardware platforms.
+
+Run the benchmark with:
+
+```bash
+python benchmark.py
+```
+
 #
 
 ### Current Progress
