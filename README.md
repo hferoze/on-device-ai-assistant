@@ -483,6 +483,7 @@ During testing, Ollama initially ran CPU-only. After rebooting 100% GPU became a
 - TTS time is excluded because the pyttsx3 measurement reflects spoken response length rather than TTS inference performance.
 - These measurements establish a baseline for comparison with NVIDIA Jetson deployment.
 
+⸻
 
 #### Step 17 — Automated Benchmarking
 
@@ -519,6 +520,37 @@ macOS → Whisper + Llama 3.2 + Qwen2.5-VL
 
 Next target:
 NVIDIA Jetson Orin Nano → same workloads → latency, memory, GPU utilization, and power analysis.
+
+
+⸻
+
+### Step 18 - Llama 3.2 Quantization Comparison
+
+```bash
+python -m experiments.benchmark_quantization
+```
+
+#### Quantization Quality Evaluation with the same prompt
+
+Llama 3.2 3B was tested using Q4_K_M and Q8_0 quantization with the same prompt and runtime configuration.
+
+| Quantization | Model Size | Cold Latency | Warm Avg |
+| --- | ---: | ---: | ---: |
+| Q4_K_M | 2.0 GB | 3.37s | 1.06s |
+| Q8_0 | 3.4 GB | 4.60s | 1.08s |
+
+The Q8_0 model increased model size by approximately 70% while providing no meaningful latency improvement in this test. Response quality was also similar for the tested prompt.
+
+For memory-constrained edge deployment, Q4_K_M currently provides the better balance of model size, latency, and output quality.
+
+#### Quantization Quality Evaluation with various types of prompts
+
+A small qualitative test set was used to compare Q4_K_M and Q8_0 across summarization, reasoning, instruction following, and structured output.
+Both models produced similar-quality responses for straightforward summarization, general questions, reasoning or instruction-following. 
+In one structured-output test, Q8_0 incorrectly identified the larger Q8 model as having lower memory usage, while Q4_K_M correctly recognized the memory-efficiency advantage of the smaller model.
+Combined with the latency and model-size measurements, these tests provide no clear justification for the additional memory cost of Q8_0 for this edge deployment.
+
+**Selected baseline: Llama 3.2 3B Q4_K_M**
 
 #
 

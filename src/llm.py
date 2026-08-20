@@ -7,13 +7,18 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "llama3.2:3b"
 
 
-def generate_response(prompt: str) -> str:
+def generate_response( 
+        prompt: str,
+        model_name: str = MODEL_NAME,) -> str:
     """Generate a response using a locally running Ollama model."""
+
+    if not model_name:
+        model_name = MODEL_NAME
 
     print(f"[LLM] Prompt received: {prompt}")
 
     payload: dict[str, Any] = {
-        "model": MODEL_NAME,
+        "model": model_name,
         "system": (
             "You are a concise on-device AI assistant. "
             "Give direct and accurate answers."
