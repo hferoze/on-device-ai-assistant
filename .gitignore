@@ -18,6 +18,11 @@ captures/
 #Whisper
 experiments/speech-to-text/whisper.cpp/
 
+#llamacpp
+experiments/custom_quantization/llama.cpp
+experiments/custom_quantization/gguf
+experiments/custom_quantization/models
+
 # macOS
 .DS_Store
 
