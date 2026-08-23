@@ -527,10 +527,9 @@ macOS → Whisper + Llama 3.2 + Qwen2.5-VL
 Next target:
 NVIDIA Jetson Orin Nano → same workloads → latency, memory, GPU utilization, and power analysis.
 
-
 ⸻
 
-### Step 18 - Llama 3.2 Quantization Comparison
+#### Step 18 - Llama 3.2 Quantization Comparison
 
 ```bash
 python -m experiments.benchmark_quantization
@@ -558,13 +557,15 @@ Combined with the latency and model-size measurements, these tests provide no cl
 
 **Selected baseline: Llama 3.2 3B Q4_K_M**
 
-#### Step 19 - Custom Quantization with Ollama
+⸻
+
+#### Step 19 - Custom Quantization
 
 Here is the plan
 1. Get Huggingface FP16 Llama3.2:3B-Instruct
 2. Convert it to GGUF using llama.cpp
 3. Quantize it to Q4_K_M and Q8_0
-4. Import it to Ollama and test - Let's go!
+4. Import quantized models to Ollama and test - Let's go!
 
 ```
 Hugging Face FP16
@@ -628,9 +629,11 @@ python llama.cpp/convert_hf_to_gguf.py \
   gguf/llama-3.2-3b-instruct-f16.gguf \
   gguf/llama-3.2-3b-instruct-q4_k_m.gguf \
   Q4_K_M
-
-[ Check sizes for each quantized version (gguf file) - should be like below ]
+```
+Check sizes for each quantized version (gguf file) - should be like below
+```bash
 ls -lh gguf
+```
 
 | Quantized Version | Size |
 | --- | ---: |
@@ -638,6 +641,7 @@ ls -lh gguf
 | llama-3.2-3b-instruct-q4_k_m.gguf | 1.9G
 | llama-3.2-3b-instruct-q8_0.gguf | 3.2G
 
+```bash
 5) Importing to Ollama and running locally
 cd experiments/custom_quantization
 
