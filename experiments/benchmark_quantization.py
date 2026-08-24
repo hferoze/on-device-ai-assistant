@@ -6,6 +6,8 @@ from src.llm import generate_response
 MODELS = [
     "llama3.2:3b",
     "llama3.2:3b-instruct-q8_0",
+    "llama3.2-custom-q4",
+    "llama3.2-custom-q8",
 ]
 
 PROMPT = "Explain edge AI in one short sentence."

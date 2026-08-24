@@ -1,9 +1,10 @@
 ### Custom Quantization
 
+Here is the plan
 1. Get Huggingface FP16 Llama3.2:3B-Instruct
 2. Convert it to GGUF using llama.cpp
 3. Quantize it to Q4_K_M and Q8_0
-4. Import it to Ollama and test - Let's go!
+4. Import quantized models to Ollama and test - Let's go!
 
 ```
 Hugging Face FP16
@@ -14,7 +15,7 @@ Quantize ourselves
    ↙           ↘
 Q4_K_M       Q8_0
    ↓           ↓
-Custom Ollama models ✅
+Custom Ollama models
 
 ```
 
@@ -26,7 +27,7 @@ git clone https://github.com/ggml-org/llama.cpp.git
 
 cd llama.cpp
 
-[Note: if running on ARM run command: arch -arm64 zsh]
+\e[1m Note: if running on ARM run command: arch -arm64 zsh \e[0m
 
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Release \
@@ -45,7 +46,8 @@ python -m pip install --upgrade pip
 python -m pip install huggingface_hub transformers sentencepiece protobuf torch
 mkdir experiments/custom_quantization/models/Llama-3.2-3B-Instruct
 
-[ Login required for Llama-3.2-3B-Instruct ]
+\e[1m Login required for Llama-3.2-3B-Instruct \e[0m
+
 hf auth login 
 cd experiments/custom_quantization/
 hf download meta-llama/Llama-3.2-3B-Instruct --local-dir models/Llama-3.2-3B-Instruct
@@ -99,5 +101,33 @@ ollama show llama3.2-custom-q4:latest [  quantization        Q4_K_M ]
 6) Test
 ollama run llama3.2-custom-q8:latest "When should I prefer on-device AI over cloud AI?"
 ollama run llama3.2-custom-q4:latest "When should I prefer on-device AI over cloud AI?"
+
+```
+
+⸻
+
+#### Benchmark
+
+Add custom models to /experiments/benchmark_quantization
+
+```bash
+
+MODELS = [
+    "llama3.2:3b",
+    "llama3.2:3b-instruct-q8_0",
+\e[1m "llama3.2-custom-q4"\e[0m ,
+\e[1m "llama3.2-custom-q8"\e[0m,
+]
+```
+
+Run quantization benchmark to validate custom models
+
+```bash
+
+cd on-device-ai-assistant
+
+\e[1m make sure to activate correct .venv\e[0m 
+
+python -m experiments.benchmark_quantization
 
 ```
