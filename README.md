@@ -41,8 +41,13 @@ The goal is to understand the system-level tradeoffs involved in deploying moder
 * [x] Camera capture experiments
 * [x] Camera integration
 * [x] Multimodal assistant
+* [x] Quantization comparison
+* [x] Custom model quantization
+* [ ] Cloud GPU deployment
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
+* [ ] Cloud vs. edge analysis
+* [ ] Smart glasses reference architecture
 
 
 ## Roadmap
@@ -702,6 +707,56 @@ cd on-device-ai-assistant
 # Make sure to activate correct .venv
 
 python -m experiments.benchmark_quantization
+
+```
+
+⸻
+
+#### Step 20 - Cloud deployment
+
+For benchmarking we will compare performance with cloud implementation.
+
+1) Start deployment local server with FastAPI
+
+```
+Client
+  ↓
+FastAPI
+  ↓
+Local Llama/Ollama
+  ↓
+JSON response
+
+```
+
+```bash
+cd on-device-ai-assistant
+source .venv/bin/activate
+python -m pip install -r cloud/requirements.txt
+uvicorn cloud.app:app --reload
+```
+
+Test local server is up
+
+```bash
+curl http://127.0.0.1:8000/health
+
+# Expected response
+# -----------------
+# {"status":"ok"}
+
+```
+
+Call Ollama through local server
+
+```bash
+curl -X POST http://127.0.0.1:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Explain edge AI in one sentence."}'
+
+# Example expected response
+# --------------------------
+# {"model":"llama3.2:3b","response":"Edge AI refers to the processing of artificial intelligence tasks at the edge of a network, typically on devices such as smartphones, smart home devices, or autonomous vehicles, to reduce latency, improve real-time decision-making, and minimize data transmission requirements."}
 
 ```
 
