@@ -716,6 +716,8 @@ python -m experiments.benchmark_quantization
 
 For benchmarking we will compare performance with cloud implementation.
 
+##### FastAPI
+
 1) Start deployment local server with FastAPI
 
 ```
@@ -759,6 +761,51 @@ curl -X POST http://127.0.0.1:8000/generate \
 # {"model":"llama3.2:3b","response":"Edge AI refers to the processing of artificial intelligence tasks at the edge of a network, typically on devices such as smartphones, smart home devices, or autonomous vehicles, to reduce latency, improve real-time decision-making, and minimize data transmission requirements."}
 
 ```
+
+##### Docker
+
+The FastAPI inference service can also be run inside a Docker container. This provides a portable deployment environment that can later be used on cloud infrastructure.
+
+1) Prerequisites
+
+- Docker Desktop
+- Ollama for local model inference
+
+2) Build the Container
+
+From the repository root:
+
+```bash
+docker build -f cloud/Dockerfile -t local-ai-api .
+```
+
+3) Run the Container
+
+```bash
+docker run --rm -p 8000:8000 local-ai-api
+```
+
+The FastAPI service will be available at:
+
+`http://localhost:8000`
+
+### Test the Service
+
+Check the health endpoint:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+The current Docker setup containerizes the API layer. Connecting the containerized service to GPU-backed model inference is the next step toward cloud deployment.
 
 #
 
