@@ -719,7 +719,6 @@ For benchmarking we will compare performance with cloud implementation.
 ##### FastAPI
 
 1) Start deployment local server with FastAPI
-
 ```
 Client
   ↓
@@ -738,8 +737,7 @@ python -m pip install -r cloud/requirements.txt
 uvicorn cloud.app:app --reload
 ```
 
-Test local server is up
-
+2) Test local server is up
 ```bash
 curl http://127.0.0.1:8000/health
 
@@ -749,8 +747,7 @@ curl http://127.0.0.1:8000/health
 
 ```
 
-Call Ollama through local server
-
+3) Call Ollama through local server
 ```bash
 curl -X POST http://127.0.0.1:8000/generate \
   -H "Content-Type: application/json" \
@@ -767,42 +764,63 @@ curl -X POST http://127.0.0.1:8000/generate \
 The FastAPI inference service can also be run inside a Docker container. This provides a portable deployment environment that can later be used on cloud infrastructure.
 
 1) Prerequisites
-
 - Docker Desktop
 - Ollama for local model inference
 
 2) Build the Container
-
 From the repository root:
-
 ```bash
 docker build -f cloud/Dockerfile -t local-ai-api .
 ```
 
 3) Run the Container
-
 ```bash
 docker run --rm -p 8000:8000 local-ai-api
 ```
-
 The FastAPI service will be available at:
-
 `http://localhost:8000`
 
-### Test the Service
-
+4) Test the Service
 Check the health endpoint:
-
 ```bash
 curl http://127.0.0.1:8000/health
 ```
-
 Expected response:
-
 ```json
 {
   "status": "ok"
 }
+```
+
+5) Test Ollama port inside Docker container
+Update `src/llm.py`
+```bash
+import os
+
+OLLAMA_URL = os.getenv(
+    "OLLAMA_URL",
+    "http://localhost:11434/api/generate",
+)
+```
+
+Re-build
+```bash
+docker build -f cloud/Dockerfile -t local-ai-api .
+```
+
+Run container
+```bash
+docker run --rm \
+  -p 127.0.0.1:8000:8000 \
+  -e OLLAMA_URL=http://host.docker.internal:11434/api/generate \
+  local-ai-api
+```
+
+Test
+```bash
+curl -X POST http://127.0.0.1:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Explain edge AI concisely."}'
 ```
 
 The current Docker setup containerizes the API layer. Connecting the containerized service to GPU-backed model inference is the next step toward cloud deployment.
@@ -825,6 +843,7 @@ Requirements
 * opencv-python
 * ultralytics
 * psutils
+* Docker
 
 Python Environment
 
