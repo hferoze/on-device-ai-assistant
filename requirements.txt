@@ -6,3 +6,4 @@ pywhispercpp
 opencv-python
 ultralytics
 psutil
+requests

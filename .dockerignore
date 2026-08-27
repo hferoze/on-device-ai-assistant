@@ -1,0 +1,9 @@
+.venv/
+.git/
+__pycache__/
+*.pyc
+captures/
+recordings/
+benchmarks/
+experiments/custom_quantization/models/
+experiments/custom_quantization/gguf/
