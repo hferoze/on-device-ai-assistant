@@ -7,3 +7,6 @@ opencv-python
 ultralytics
 psutil
 requests
+transformers
+torch
+accelerate

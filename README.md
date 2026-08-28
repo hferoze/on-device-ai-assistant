@@ -42,7 +42,11 @@ The goal is to understand the system-level tradeoffs involved in deploying moder
 * [x] Camera integration
 * [x] Multimodal assistant
 * [x] Quantization comparison
-* [x] Custom model quantization
+* [x] **Created FastAPI inference service**
+* [x] Containerized the API using Docker
+* [x] **Custom model quantization**
+* [x] **Added Hugging Face Transformers inference backend**
+* [ ] Integrate Hugging Face inference backend with FastAPI
 * [ ] Cloud GPU deployment
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
@@ -716,7 +720,7 @@ python -m experiments.benchmark_quantization
 
 For benchmarking we will compare performance with cloud implementation.
 
-##### FastAPI
+#### FastAPI
 
 1) Start deployment local server with FastAPI
 ```
@@ -759,13 +763,18 @@ curl -X POST http://127.0.0.1:8000/generate \
 
 ```
 
-##### Docker
+#### Docker
 
 The FastAPI inference service can also be run inside a Docker container. This provides a portable deployment environment that can later be used on cloud infrastructure.
 
 1) Prerequisites
 - Docker Desktop
 - Ollama for local model inference
+
+```bash
+#Open Docker: open -a Docker
+#Close Docker: osascript -e 'quit app "Docker"'
+```
 
 2) Build the Container
 From the repository root:
@@ -824,6 +833,16 @@ curl -X POST http://127.0.0.1:8000/generate \
 ```
 
 The current Docker setup containerizes the API layer. Connecting the containerized service to GPU-backed model inference is the next step toward cloud deployment.
+
+### Local Hugging Face Inference
+Using Hugging Face Transformers and PyTorch.
+
+During local development on Apple Silicon, PyTorch uses the Metal Performance Shaders (MPS) backend for GPU acceleration.
+
+```text
+macOS / MPS → Cloud / CUDA → Jetson / CUDA
+```
+
 
 #
 
