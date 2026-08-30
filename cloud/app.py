@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from src.llm import generate_response
+#from src.llm import generate_response
+from cloud.hf_inference import generate_response
 
 
 app = FastAPI(title="Local AI Inference API")
@@ -22,5 +23,6 @@ def generate(request: PromptRequest):
 
     return {
         "model": "llama3.2:3b",
+        "backend": "transformers-pytorch",
         "response": response,
     }

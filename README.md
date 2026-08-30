@@ -834,7 +834,7 @@ curl -X POST http://127.0.0.1:8000/generate \
 
 The current Docker setup containerizes the API layer. Connecting the containerized service to GPU-backed model inference is the next step toward cloud deployment.
 
-### Local Hugging Face Inference
+#### Local Hugging Face Inference
 Using Hugging Face Transformers and PyTorch.
 
 During local development on Apple Silicon, PyTorch uses the Metal Performance Shaders (MPS) backend for GPU acceleration.

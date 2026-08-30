@@ -43,9 +43,9 @@ def generate_response(prompt: str) -> str:
     )
 
 #TEMPORARY TEST##
-if __name__ == "__main__":
-    response = generate_response(
-        "Explain edge AI in one short sentence."
-    )
-    print(response)
+# if __name__ == "__main__":
+#     response = generate_response(
+#         "Explain edge AI in one short sentence."
+#     )
+#     print(response)
 #################
