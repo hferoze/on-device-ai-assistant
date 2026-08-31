@@ -839,10 +839,16 @@ Using Hugging Face Transformers and PyTorch.
 
 During local development on Apple Silicon, PyTorch uses the Metal Performance Shaders (MPS) backend for GPU acceleration.
 
-```text
-macOS / MPS → Cloud / CUDA → Jetson / CUDA
+In one Terminal
+```bash
+uvicorn cloud.app:app
 ```
-
+Open another Terminal do
+```bash
+curl -X POST http://127.0.0.1:8000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Explain edge AI in one short sentence."}'
+```
 
 #
 

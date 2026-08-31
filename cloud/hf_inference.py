@@ -9,7 +9,17 @@ model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
     dtype=torch.float16
 )
-model = model.to("mps") #Run on Metal "mps"
+
+if torch.cuda.is_available():
+    DEVICE = "cuda"
+elif torch.backends.mps.is_available():
+    DEVICE = "mps" #Run on Metal "mps"
+else:
+    DEVICE = "cpu"
+
+model = model.to(DEVICE) 
+
+print(f"Using device: {DEVICE}")
 
 def generate_response(prompt: str) -> str:
     messages = [
@@ -24,7 +34,7 @@ def generate_response(prompt: str) -> str:
     inputs = tokenizer(
         text,
         return_tensors="pt"
-    ).to("mps")
+    ).to(DEVICE)
 
     with torch.no_grad():
         outputs = model.generate(
