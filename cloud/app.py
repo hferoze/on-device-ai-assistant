@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from cloud.hf_inference import generate_response
 
 
-app = FastAPI(title="Local AI Inference API")
+app = FastAPI(title="AI Inference API")
 
 
 class PromptRequest(BaseModel):

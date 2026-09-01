@@ -722,7 +722,7 @@ For benchmarking we will compare performance with cloud implementation.
 
 #### FastAPI
 
-1) Start deployment local server with FastAPI
+1) Start deployment of local server with FastAPI
 ```
 Client
   ↓
@@ -848,6 +848,20 @@ Open another Terminal do
 curl -X POST http://127.0.0.1:8000/generate \
   -H "Content-Type: application/json" \
   -d '{"prompt":"Explain edge AI in one short sentence."}'
+```
+
+#### Create Hugging Face API 
+
+```bash
+# Make sure Docker is running
+open -a Docker
+
+#Create HF API
+docker build -f cloud/Dockerfile -t hf-ai-api .
+
+#Verify Docker image is created for HF API
+docker images | grep hf-ai-api
+
 ```
 
 #
