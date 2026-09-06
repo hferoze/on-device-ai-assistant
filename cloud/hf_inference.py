@@ -1,12 +1,20 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
-MODEL_NAME = "meta-llama/Llama-3.2-3B-Instruct"
+import os
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+MODEL_NAME = os.getenv(
+    "MODEL_NAME",
+    "meta-llama/Llama-3.2-3B-Instruct",
+)
+
+HF_TOKEN = os.getenv("HF_TOKEN")
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, token=HF_TOKEN)
 
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
+    token=HF_TOKEN,
     dtype=torch.float16
 )
 

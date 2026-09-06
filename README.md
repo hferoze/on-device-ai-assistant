@@ -864,6 +864,142 @@ docker images | grep hf-ai-api
 
 ```
 
+#### AWS GPU Deployment
+
+We will use Hugging Face inference service on AWS EC2 with NVIDIA GPU for benchmark comparison cloud vs MAC.
+
+#### EC2 Configuration
+
+| Setting | Configuration |
+| --- | --- |
+| AMI | NVIDIA GPU-Optimized AMI |
+| Instance type | `g5.xlarge` |
+| GPU | NVIDIA A10G |
+| Key pair | RSA/ED25519 `.pem` key |
+| SSH access | My IP only |
+| Root storage | gp3 |
+| File system | None |
+
+`
+Name and tags -> [you-can-choose]
+Application and OS Image -> Search for NVIDIA GPU-Optimized AMI
+Instance type -> g5.xlarge
+Key pair (login) -> Create new .pem key pair and save it locally [keep it safe]
+Network Settings
+	- Firewall (security group) -> Create security group
+	- [Check] Allow SSH traffic from - [Dropdown] My IP
+Configure Storage -> 1x [128] GIB [gp3] Root volume
+File System -> None
+`
+**Launch Instance**
+
+> GPU instances incur charges while running. Stop the instance when it is not being used.
+
+#### 1. Connect to the Instance
+
+Once the EC2 instance is running and its status checks have passed:
+
+```bash
+chmod 400 your-key.pem
+
+ssh -i your-key.pem ubuntu@<PUBLIC-IP>
+```
+
+Verify that the NVIDIA GPU is available:
+
+```bash
+nvidia-smi
+```
+
+A `g5.xlarge` instance should report an NVIDIA A10G GPU.
+
+#### 2. Verify GPU Access from Docker
+
+Check Docker:
+
+```bash
+sudo docker --version
+```
+
+Verify that a Docker container can access the GPU:
+
+```bash
+sudo docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu24.04 nvidia-smi
+```
+
+#### 3. Clone the Repository
+
+```bash
+git clone git@github.com:hferoze/on-device-ai-assistant.git
+cd on-device-ai-assistant
+```
+
+**For a private repository, configure GitHub SSH authentication or a read-only deploy key before cloning.**
+
+#### 4. Build the Inference Container
+
+```bash
+sudo docker build -f cloud/Dockerfile -t hf-ai-api .
+```
+
+#### 5. Configure Hugging Face Authentication
+
+Create a local `.env` file:
+
+```text
+HF_TOKEN=<your-hugging-face-token>
+```
+
+The `.env` file must not be committed to Git and is excluded through `.gitignore`.
+
+### 6. Start GPU Inference
+
+```bash
+sudo docker run --rm --gpus all --env-file .env -p 8000:8000 hf-ai-api
+```
+
+Hugging Face downloads/caches the model and PyTorch loads the model weights at startup and then uvicorn starts the FastAPI inference server.
+
+#### 7. Test Inference
+
+Open another Terminal -> Start SSH session to the same EC2 instance:
+
+```bash
+curl -X POST http://127.0.0.1:8000/generate -H "Content-Type: application/json" -d '{"prompt":"Explain edge AI in one short sentence."}'
+```
+
+```text
+Client
+  ↓
+FastAPI
+  ↓
+Docker
+  ↓
+Hugging Face Transformers
+  ↓
+PyTorch / CUDA
+  ↓
+NVIDIA A10G
+  ↓
+Llama 3.2 3B
+```
+
+#### 8. Shut Down the GPU Instance
+
+When testing is complete, exit the SSH sessions:
+
+```bash
+exit
+```
+
+Then stop the instance from the AWS console:
+
+```text
+EC2 → Instances → select instance → Instance state → Stop instance
+```
+
+Stopping the instance prevents additional EC2 GPU compute charges but keeps the the instance and its EBS storage for future benchmarking.
+
 #
 
 ### Setup Instructions
