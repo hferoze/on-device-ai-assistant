@@ -866,7 +866,7 @@ docker images | grep hf-ai-api
 
 #### AWS GPU Deployment
 
-We will use Hugging Face inference service on AWS EC2 with NVIDIA GPU for benchmark comparison cloud vs MAC.
+We will be use Hugging Face inference service on AWS EC2 with NVIDIA GPU for benchmark comparison cloud vs MAC vs Jetson Nano
 
 #### EC2 Configuration
 
@@ -880,7 +880,7 @@ We will use Hugging Face inference service on AWS EC2 with NVIDIA GPU for benchm
 | Root storage | gp3 |
 | File system | None |
 
-`
+```text
 Name and tags -> [you-can-choose]
 Application and OS Image -> Search for NVIDIA GPU-Optimized AMI
 Instance type -> g5.xlarge
@@ -890,7 +890,7 @@ Network Settings
 	- [Check] Allow SSH traffic from - [Dropdown] My IP
 Configure Storage -> 1x [128] GIB [gp3] Root volume
 File System -> None
-`
+```
 **Launch Instance**
 
 > GPU instances incur charges while running. Stop the instance when it is not being used.
@@ -911,7 +911,7 @@ Verify that the NVIDIA GPU is available:
 nvidia-smi
 ```
 
-A `g5.xlarge` instance should report an NVIDIA A10G GPU.
+`g5.xlarge` instance should say an NVIDIA A10G GPU.
 
 #### 2. Verify GPU Access from Docker
 
@@ -952,7 +952,7 @@ HF_TOKEN=<your-hugging-face-token>
 
 The `.env` file must not be committed to Git and is excluded through `.gitignore`.
 
-### 6. Start GPU Inference
+#### 6. Start GPU inference server
 
 ```bash
 sudo docker run --rm --gpus all --env-file .env -p 8000:8000 hf-ai-api
@@ -999,6 +999,77 @@ EC2 → Instances → select instance → Instance state → Stop instance
 ```
 
 Stopping the instance prevents additional EC2 GPU compute charges but keeps the the instance and its EBS storage for future benchmarking.
+
+#### Cloud GPU Performance
+
+Initial cloud inference measurements were collected on an AWS EC2 `g5.xlarge` instance using the same Llama 3.2 3B Instruct model used during local development.
+
+#### Test Environment
+
+| Component | Configuration |
+| --- | --- |
+| Cloud | AWS EC2 |
+| Instance | `g5.xlarge` |
+| GPU | NVIDIA A10G |
+| GPU Memory | 23 GB |
+| Model | Llama 3.2 3B Instruct |
+| Model Precision | FP16 |
+| Inference Framework | Hugging Face Transformers + PyTorch |
+| Compute Backend | CUDA |
+| Deployment | Docker + FastAPI |
+
+#### Inference Latency
+
+On Terminal 1
+```bash
+# Connect to the Instance
+ssh -i your-key.pem ubuntu@<PUBLIC-IP>
+
+#Start inference server
+sudo docker run --rm --gpus all --env-file .env -p 8000:8000 hf-ai-api
+
+```
+
+On Terminal 2
+```bash
+time curl -s -X POST http://127.0.0.1:8000/generate \
+      -H "Content-Type: application/json" \ 
+      -d '{"prompt":"Explain edge AI in one short sentence."}'
+```
+
+On Terminal 3
+```bash
+watch -n 0.5 nvidia-smi
+```
+
+**Latency Results**
+
+| Measurement | Latency |
+| --- | ---: |
+| First request | 6.083s |
+| Warm request 1 | 1.288s |
+| Warm request 2 | 1.283s |
+| **Warm average** | **1.286s** |
+
+The first request includes additional runtime warm-up overhead. Subsequent requests demonstrate steady-state inference performance with the model already resident in GPU memory.
+
+**GPU Observations**
+
+| Metric | Observed Value |
+| --- | ---: |
+| GPU memory | ~6.5 GB |
+| GPU utilization during inference | ~62% |
+| Power during inference | ~129 W |
+| GPU temperature | ~39°C |
+
+GPU utilization and power are observational samples captured with `watch -n 0.5 nvidia-smi` during inference rather than time-averaged benchmark measurements.
+
+#### Initial Observation
+
+The cloud deployment shows approximately **1.29-second steady-state response latency** for Llama 3.2 3B FP16 inference on an NVIDIA A10G.
+
+This will be cloud GPU baseline that will later be compared against local and NVIDIA Jetson inference.
+
 
 #
 
