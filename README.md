@@ -46,8 +46,8 @@ The goal is to understand the system-level tradeoffs involved in deploying moder
 * [x] Containerized the API using Docker
 * [x] **Custom model quantization**
 * [x] **Added Hugging Face Transformers inference backend**
-* [ ] Integrate Hugging Face inference backend with FastAPI
-* [ ] Cloud GPU deployment
+* [x] Integrate Hugging Face inference backend with FastAPI
+* [x] Cloud GPU deployment
 * [ ] Wake-word detection
 * [ ] Jetson Orin Nano deployment
 * [ ] Cloud vs. edge analysis
@@ -1070,6 +1070,24 @@ The cloud deployment shows approximately **1.29-second steady-state response lat
 
 This will be cloud GPU baseline that will later be compared against local and NVIDIA Jetson inference.
 
+#### Automated benchmark
+
+With the Docker running, run the following command
+
+```bash
+python3 cloud/benchmark_cloud.py
+```
+
+Results should look like this
+```text
+Cloud Inference Benchmark
+========================================
+First request: 5.99s
+Warm 1: 1.23s
+Warm 2: 1.23s
+Warm 3: 1.22s
+Warm average: 1.23s
+```
 
 #
 
