@@ -1,5 +1,6 @@
 from pathlib import Path
 from threading import Lock
+import subprocess
 
 from pywhispercpp.model import Model
 
@@ -15,6 +16,34 @@ WHISPER_MODEL = (
     / "ggml-small.en.bin"
 )
 
+class WhisperCudaSTT:
+    def __init__(self):
+        self.binary = (
+            PROJECT_ROOT
+            / "experiments"
+            / "speech-to-text"
+            / "whisper.cpp"
+            / "build"
+            / "bin"
+            / "whisper-cli"
+        )
+
+        self.model = WHISPER_MODEL
+
+    def transcribe(self, audio_file):
+        result = subprocess.run(
+            [
+                str(self.binary),
+                "-m", str(self.model),
+                "-f", str(audio_file),
+                "--no-prints",
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        return result.stdout.strip()
 
 class PersistentSTT:
     """Keep one whisper.cpp model loaded and reuse it."""

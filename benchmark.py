@@ -7,11 +7,11 @@ from datetime import datetime
 import platform
 import re
 import subprocess
+import requests
 
-from src.audio.stt import PersistentSTT
+from src.audio.stt import PersistentSTT, WhisperCudaSTT
 from src.llm import generate_response
 from src.vision.describer import describe_scene
-
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
@@ -175,6 +175,32 @@ def print_system_info():
     print("-------------")
     print(get_ollama_status())
 
+def create_stt():
+    system = platform.system()
+    architecture = platform.machine()
+
+    if system == "Linux" and architecture == "aarch64":
+        print("STT backend: CUDA whisper.cpp")
+        return WhisperCudaSTT()
+
+    print("STT backend: pywhispercpp")
+    return PersistentSTT()
+
+def unload_ollama_model(model):
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": model,
+                "keep_alive": 0,
+            },
+            timeout=30,
+        )
+        response.raise_for_status()
+        print(f"Unloaded {model}")
+    except requests.RequestException as e:
+        print(f"Warning: could not unload {model}: {e}")
+
 def benchmark_stt(stt):
     print("\nSTT Benchmark")
     print("-------------")
@@ -256,11 +282,24 @@ def main():
         )
 
     print("\nLoading persistent Whisper model...")
-    stt = PersistentSTT()
-
+    stt = create_stt()
     stt_times = benchmark_stt(stt)
+    
+    # Release Whisper before loading LLM/VLM models.
+    del stt
+    import gc
+    gc.collect()
+    
     llm_times = benchmark_llm()
+    
+    # Unload Llama before loading the VLM
+    unload_ollama_model(LLM_MODEL)
+    gc.collect()   
+    time.sleep(2)
+    
     vlm_times = benchmark_vlm()
+    unload_ollama_model(VLM_MODEL)
+    gc.collect()
 
     print("\n==============================")
     print("Benchmark Summary")
