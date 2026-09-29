@@ -1,1133 +1,386 @@
 # On-Device AI Assistant
 
-### Overview
+A multimodal AI assistant and performance-engineering project exploring how speech, language, and vision AI workloads behave across local, cloud, and edge computing platforms.
 
-This project explores the design, deployment, and optimization of a multimodal AI assistant across edge and cloud computing environments.
+## Overview
 
-The project begins with a fully local AI pipeline for speech, language and vision workloads, then evaluates how the same workloads behave across different deployment targets:
+This project began as a fully local AI assistant and evolved into an exploration of AI deployment and optimization across three computing environments:
 
-- Development workstation (macOS)
-- Cloud GPU infrastructure
+- Apple Silicon development workstation
+- AWS NVIDIA GPU infrastructure
 - NVIDIA Jetson edge hardware
 
-The goal is to understand the system-level tradeoffs involved in deploying modern AI workloads.
+The objective is not only to build a functional assistant, but to understand the system-level tradeoffs involved in deploying modern AI workloads.
+
+Areas explored include:
 
 - Local LLM and VLM inference
-- Speech-to-text and multimodal pipelines
+- Speech-to-text
+- Multimodal AI pipelines
 - Model quantization
-- Latency and memory optimization
 - GPU acceleration
+- Latency and memory optimization
+- Cloud GPU deployment
 - Edge AI deployment
-- Cloud AI deployment
 - Performance benchmarking
 - Cloud vs. edge architecture tradeoffs
 
-## Project Status
+---
 
-* [x] Local language model using Ollama
-* [x] Local speech-to-text using whisper.cpp
-* [x] Offline text-to-speech using pyttsx3
-* [x] Typed question pipeline
-* [x] Pre-recorded voice pipeline
-* [x] Live microphone input
-* [x] Interactive assistant loop
-* [x] Pipeline latency measurements
-* [x] Context awareness (Conversation memory)
-* [x] Push-to-talk microphone recording
-* [x] Automatic silence detection (End of speech detection)
-* [x] Partial streaming transcription
-* [x] Persistent streaming transcription [whisper experiment]
-* [x] Persistent streaming transcription [pywhispercpp]
-* [x] Camera capture experiments
-* [x] Camera integration
-* [x] Multimodal assistant
-* [x] Quantization comparison
-* [x] **Created FastAPI inference service**
-* [x] Containerized the API using Docker
-* [x] **Custom model quantization**
-* [x] **Added Hugging Face Transformers inference backend**
-* [x] Integrate Hugging Face inference backend with FastAPI
-* [x] Cloud GPU deployment
-* [ ] Wake-word detection
-* [ ] Jetson Orin Nano deployment
-* [ ] Cloud vs. edge analysis
-* [ ] Smart glasses reference architecture
+## System Architecture
 
+### Voice Assistant
 
-## Roadmap
+```text
+Microphone
+    ↓
+Automatic Silence Detection
+    ↓
+Whisper STT
+    ↓
+Conversation Memory
+    ↓
+Llama 3.2 3B
+    ↓
+Offline TTS
+    ↓
+Speaker
+```
+
+### Multimodal Assistant
+
+```text
+Voice Question
+      ↓
+Whisper STT
+      ↓
+Intent Detection
+      ↓
+ ┌──────────────┐
+ │              │
+ ▼              ▼
+Vision          Text
+ │              │
+Camera          │
+ ↓              │
+Qwen2.5-VL      Llama 3.2
+ │              │
+ └──────┬───────┘
+        ↓
+       TTS
+        ↓
+     Speaker
+```
+
+The assistant runs locally without requiring cloud inference.
+
+---
+
+## Deployment Architecture
+
+The same AI workloads are being evaluated across multiple deployment targets.
+
+```text
+                    AI Workloads
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+          ▼              ▼              ▼
+     Apple Silicon    AWS A10G      Jetson Orin
+          │              │              │
+          ▼              ▼              ▼
+     Local Baseline   Cloud GPU       Edge GPU
+          │              │              │
+          └──────────────┼──────────────┘
+                         │
+                         ▼
+                  Compare Tradeoffs
+```
+
+The comparison focuses on:
+
+- Latency
+- Memory
+- GPU utilization
+- Power
+- Cost
+- Privacy
+- Connectivity
+- Model capability
+
+---
 
 ## Project Roadmap
 
-### Phase 1 — Local Multimodal AI Assistant
-Build the complete voice and vision assistant locally.
+### Phase 1 — Local Multimodal AI Assistant ✅
 
-### Phase 2 — AI Performance & Model Optimization
-Benchmark LLM, VLM, and STT workloads and evaluate quantization, latency, and memory tradeoffs.
+Built a complete local voice and vision assistant including:
 
-### Phase 3 — Cloud AI Deployment
-Containerize the inference stack and deploy LLM/VLM workloads on cloud GPU infrastructure.
+- Local speech recognition
+- Offline text-to-speech
+- Live microphone input
+- Automatic silence detection
+- Conversation memory
+- Persistent Whisper experiments
+- Camera integration
+- Llama 3.2 language inference
+- Qwen2.5-VL visual reasoning
 
-### Phase 4 — Jetson Edge Deployment
-Deploy and optimize the same workloads on NVIDIA Jetson hardware using edge-optimized inference technologies.
+### Phase 2 — AI Performance & Model Optimization ✅
+
+Built reusable benchmarking infrastructure and explored:
+
+- Cold vs. warm inference
+- LLM/VLM/STT latency
+- GPU execution
+- Q4_K_M vs. Q8_0 quantization
+- Custom GGUF quantization
+- Memory/performance tradeoffs
+
+Selected edge LLM baseline:
+
+**Llama 3.2 3B Q4_K_M**
+
+### Phase 3 — Cloud GPU Deployment ✅
+
+Deployed the inference stack using:
+
+```text
+Client
+   ↓
+FastAPI
+   ↓
+Docker
+   ↓
+Hugging Face Transformers
+   ↓
+PyTorch / CUDA
+   ↓
+NVIDIA A10G
+```
+
+AWS `g5.xlarge` provides the cloud GPU baseline.
+
+### Phase 4 — NVIDIA Jetson Edge Deployment 🚧
+
+Current platform:
+
+**NVIDIA Jetson Orin Nano Super**
+
+Completed so far:
+
+- JetPack / CUDA environment
+- CUDA-enabled PyTorch
+- Ollama GPU inference
+- CUDA-enabled whisper.cpp
+- Platform-aware STT backend
+- Unified-memory optimization
+- Sequential model lifecycle management
+- Initial Jetson benchmarks
+
+Current focus:
+
+**Running and optimizing the complete multimodal assistant on Jetson.**
 
 ### Phase 5 — Cloud vs. Edge Analysis
-Compare latency, memory, power, cost, privacy, connectivity, and model-capability tradeoffs across deployment environments.
+
+Compare the deployment environments across:
+
+- Performance
+- Memory
+- Power
+- Cost
+- Privacy
+- Connectivity
+- Model capability
 
 ### Phase 6 — Smart Glasses Reference Architecture
-Apply the findings to a practical edge-AI product architecture.
 
-#
+Apply the findings from the project to a practical edge-AI product architecture.
 
-### Phase 1 - Local Multimodal AI Assistant
+---
 
-#### Step 1 — Local Speech Recognition
+## Current Performance Snapshot
 
-Microphone / WAV → Speech-to-Text
+### Llama 3.2 3B
 
-Successfully transcribed recorded speech locally using whisper.cpp and the Whisper base.en model.
+| Platform | Configuration | Steady-State Latency |
+|---|---|---:|
+| Mac | Ollama / Q4 | ~1–2 s |
+| AWS A10G | PyTorch / FP16 | ~1.29 s |
+| Jetson Orin Nano Super | Ollama / Q4 | ~1.75 s |
 
-⸻
+> These results use different inference backends and precision configurations and therefore represent deployment observations rather than a strict hardware benchmark.
 
-#### Step 2 — Local Text-to-Speech
+### Jetson Whisper Optimization
 
-Text → Speech → Speaker
+Initial Jetson Whisper execution was CPU-bound:
 
-Validated offline text-to-speech using pyttsx3.
-
-⸻
-
-#### Step 3 — First End-to-End Voice Pipeline
-
-Connected every major AI component into a complete offline assistant.
-
-Recorded WAV
-      →
-Whisper.cpp
-      →
-Ollama
-      →
-pyttsx3
-      →
-Speaker
-
-⸻
-
-#### Step 4 — Live Microphone Assistant
-
-Replaced the manually supplied WAV file with live microphone recording.
-
-Microphone
-      →
-Recorded WAV
-      →
-Whisper.cpp
-      →
-Ollama
-      →
-pyttsx3
-      →
-Speaker
-
-The assistant now records audio directly from the microphone before running the complete local AI pipeline.
-
-⸻
-
-#### Step 5 — Interactive Assistant
-
-Converted the assistant from a single-run script into an interactive application.
-
-The assistant now remains running, allowing multiple questions to be asked without restarting the program. This significantly reduces warm-start latency since the language model remains loaded in memory.
-
-Current workflow:
-
-Start Assistant
-      →
-Record Question
-      →
-Whisper.cpp
-      →
-Ollama
-      →
-pyttsx3
-      →
-Speak Response
-      →
-Wait for Next Question
-
-⸻
-
-#### Step 6 — Performance Measurements
-
-Added timing measurements for every stage of the inference pipeline.
-
-Current metrics include:
-
-* Speech-to-text latency
-* LLM inference latency
-* Text-to-speech latency
-* End-to-end processing latency
-* Cold-start vs. warm-start behavior
-
-The first request is noticeably slower because AI models must be initialized and loaded into memory. Subsequent requests execute significantly faster.
-
-⸻
-
-#### Step 7 — Context Awareness
-
-Added conversation memory to give context to the assistent of the ongoing session
-
-Max context size is set to 6 (modifiable)
-
-⸻
-
-#### Step 8 — Push to Talk
-
-Replaced the fixed-duration microphone recording with manual start and stop controls. The user can now speak for any reasonable duration before sending the recording through the local AI pipeline.
-
-⸻
-
-#### Step 9 — Automatic Silence Detection
-
-Added automatic end-of-speech detection to the microphone input pipeline.
-
-After recording begins, the assistant waits for speech and automatically stops after approximately 1.2 seconds of silence. This removes the need to manually stop each recording while keeping the existing file-based speech recognition pipeline.
-
-⸻
-
-#### Step 10 — Partial streaming transcription
-
-Microphone audio chunks
-      →
-Incremental buffering
-      →
-Partial transcription
-      →
-Final transcription after silence
-      →
-Ollama 
-      → 
-TTS
-
-Added chunk-based microphone processing and partial transcription while the user is still speaking.
-The current implementation periodically transcribes accumulated audio and displays an interim result. A final transcription is still produced after end-of-speech detection.
-This validates the streaming architecture, although Whisper is currently restarted for each partial transcription.
-
-Note: First launch takes signification amount of time since model is not yet loaded in the memory. 
-
-Measured partial-transcription latency in the current chunk-based streaming pipeline.
-
-The current implementation launches whisper.cpp repeatedly and retranscribes the accumulated audio for every partial result. Latency increases as the recording becomes longer.
-
-⸻
-
-#### Step 11 — Persistent streaming transcription [whisper experiment]
-
-Build and test whisper.cpp streaming example. This reduces repeated model-startup overhead and provides a foundation for persistent speech recognition.
-
-1. Install sdl2
-```bash 
-brew install sdl2
+```text
+pywhispercpp
+~31.7 s
+GR3D: 0%
 ```
 
-2. Rebuild whisper.cpp with streaming enabled
-```bash 
-cd experiments/speech-to-text/whisper.cpp
-cmake -S . -B build \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DWHISPER_SDL2=ON \
-  -DWHISPER_BUILD_EXAMPLES=ON
+After compiling whisper.cpp with CUDA and adding a Jetson-specific backend:
 
-cmake --build build -j
+```text
+CUDA whisper.cpp
+~1.2 s subsequent-run latency
+GPU acceleration active
 ```
 
-Note: If there is an error on MAC with Apple silicon, make sure the terminal is running in under arm64. 
-```bash 
-cd experiments/speech-to-text/whisper.cpp
-uname -m
-arch 
-- If either says x86_64 then run the following command
-arch -arm64 zsh (Set to build for arm64)
-arch (Must say arm64)
-rm -rf build
-cmake -S . -B build \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_OSX_ARCHITECTURES=arm64 \
-  -DWHISPER_SDL2=ON \
-  -DWHISPER_BUILD_EXAMPLES=ON
-cmake --build build -j
+This produced approximately a **26× reduction in subsequent-run STT latency**.
+
+---
+
+## Key Engineering Findings
+
+### GPU support does not guarantee GPU execution
+
+Profiling revealed that the original Whisper backend was CPU-bound despite CUDA being available.
+
+Compiling whisper.cpp with CUDA dramatically reduced transcription latency.
+
+### Unified memory changes deployment behavior
+
+The Jetson CPU and GPU share the same physical memory.
+
+Memory consumed by desktop applications can prevent Ollama from fully offloading a model to the GPU.
+
+During testing:
+
+```text
+High memory pressure
+→ Ollama: 97% CPU / 3% GPU
+
+After freeing memory
+→ Ollama: 100% GPU
 ```
 
-3. Verify the binary is available
-```bash
-file build/bin/whisper-stream
-./build/bin/whisper-stream --help
-```
+### Model lifecycle matters on constrained edge hardware
 
-4. List available microphones
-```bash
-cat << 'EOF' > list_audio.c
-#include <SDL2/SDL.h>
-#include <stdio.h>
-int main() {
-    SDL_Init(SDL_INIT_AUDIO);
-    int count = SDL_GetNumAudioDevices(0);
-    printf("Playback devices: %d\n", count);
-    for(int i = 0; i < count; i++) {
-        printf("  [%d] %s\n", i, SDL_GetAudioDeviceName(i, 0));
-    }
-    SDL_Quit();
-    return 0;
-}
-EOF
-clang list_audio.c -o list_audio -I/opt/homebrew/include -L/opt/homebrew/lib -lSDL2 && ./list_audio
-```
+Running Whisper, Llama, and Qwen2.5-VL sequentially can approach the limits of an 8 GB Jetson.
 
-5. Run persistent transcription
+The benchmark therefore explicitly releases or unloads models between workloads.
+
+### Quantization matters more than raw model size
+
+Llama 3.2 3B Q4_K_M provided similar latency and observed response quality to Q8_0 while requiring substantially less memory.
+
+This made Q4_K_M the preferred baseline for edge deployment.
+
+---
+
+## Documentation
+
+Detailed setup instructions, experiments, and benchmark methodology are separated from this project overview.
+
+| Document | Description |
+|---|---|
+| [Mac Development](docs/mac_development.md) | Local assistant development, speech experiments, camera integration, and macOS setup |
+| [Benchmarking & Optimization](docs/benchmarking.md) | Benchmark methodology, performance analysis, and model quantization |
+| [Cloud Deployment](docs/cloud_deployment.md) | FastAPI, Docker, Hugging Face, AWS A10G deployment, and cloud benchmarks |
+| [Jetson Deployment](docs/jetson_deployment.md) | Jetson setup, CUDA optimization, unified-memory findings, and edge benchmarks |
+
+---
+
+## Running the Assistant
+
+Activate the project environment:
 
 ```bash
-
-./build/bin/whisper-stream \
-  -m models/ggml-base.en.bin \
-  --step 500 \
-  --length 5000 \
-  --keep 200 \
-  --capture 0
-
+source .venv/bin/activate
 ```
 
-6. Create a shell script to keep it simple e.g.
+Run the multimodal assistant:
 
 ```bash
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-WHISPER_DIR="experiments/speech-to-text/whisper.cpp"
-MODEL="$WHISPER_DIR/models/ggml-base.en.bin"
-STREAM="$WHISPER_DIR/build/bin/whisper-stream"
-
-if [[ ! -x "$STREAM" ]]; then
-    echo "whisper-stream was not found: $STREAM"
-    exit 1
-fi
-
-if [[ ! -f "$MODEL" ]]; then
-    echo "Whisper model was not found: $MODEL"
-    exit 1
-fi
-
-"$STREAM" \
-    -m "$MODEL" \
-    --step 500 \
-    --length 5000 \
-    --keep 200 \
-    --capture 0
-
-```
-
-⸻
-
-#### Step 12 — Persistent streaming transcription [pywhispercpp]
-
-Implemented persistent streaming transcription pipeline using pywhispercpp. With this solution we load whisper model only once to continuously transcribe.
-
-```bash
-python src/assistant_p.py
-```
-
-
-
-```
-                   (Startup - runs once)
-
-           Load Whisper Model (pywhispercpp)
-                      │
-                      ▼
-           Initialize Conversation Memory
-                      │
-                      ▼
-                Wait for User
-                      │
-────────────────────────────────────────────────────────
-
-Press ENTER
-      │
-      ▼
-Automatic Silence Detection
-(record_audio.py)
-      │
-      ▼
-Save question.wav
-      │
-      ▼
-Persistent Whisper Model
-(pywhispercpp)
-      │
-      ▼
-Speech-to-Text
-      │
-      ▼
-Conversation Memory
-(build prompt)
-      │
-      ▼
-Ollama (Local LLM)
-      │
-      ▼
-Update Conversation Memory
-      │
-      ▼
-pyttsx3
-      │
-      ▼
-Speaker
-      │
-      ▼
-Wait
-      │
-      ▼
-Back to "Press ENTER"
-```
-⸻
-
-#### Step 13 — Camera capture experiments
-
-Did few experiments with camera capture → YOLO → LLM description.
-
-#### Step 14 — Camera integration / Multimodal assistant
-
-Added multimodal functionality. Certain commands from the user trigger vision path as described by the flow diagram below.
-
-```
-Voice Question
-      ↓
-Persistent Whisper
-      ↓
-Intent Check
-      ↓
- ┌───────────────┐
- │               │
- ▼               ▼
-Vision         Normal
-Command        Question
- │               │
-Camera          LLM
- ↓               │
-YOLO             │
- ↓               │
-LLM Description  │
- └───────┬───────┘
-         ↓
-       TTS
-
-```
-
-```bash
-
-cd on-device-ai-assistant
 python -m src.assistant_multimodal
-
 ```
 
-⸻
+---
 
-#### Step 15 — Multimodal analyzer assistant
+## Benchmarking
 
-Instead of simple object detection using YOLO, incorporated Qwen2.5-VL to properly describe the image.
-
-```
-Voice question
-      ↓
-Persistent Whisper
-      ↓
-Vision intent
-      ↓
-Camera
-      ↓
-Qwen2.5-VL 3B
-      ↓
-Visual reasoning
-      ↓
-TTS
-
-```
-
-Note: Cold start takes significant amount of time.
-
-⸻
-
-### Phase 2 — AI Performance & Model Optimization
-
-#### Step 16 — Performance Analysis on MAC M1 
-
-Performance measurements were collected on the development Mac before deployment to NVIDIA Jetson hardware.
-
-Cold-start measurements include model loading and initialization. Warm measurements represent subsequent inference while the models remain resident in memory
-
-##### Setup
-```
-- MAC M1 (arm64)
-- Ollama version: 0.32.9
-- Vision model: qwen2.5vl:3b
-- Language model: llama3.2:3b
-- Python: 3.13
-- STT: Whisper small.en
-- TTS: pyttsx3
-```
-
-During testing, Ollama initially ran CPU-only. After rebooting 100% GPU became available. Benchmarks below were collected after restoring GPU acceleration.
-
-##### Results
-
-| Pipeline / Component | Cold | Warm 1 | Warm 2 | Warm 3 |
-| -------------------- | ---: | -----: | -----: | -----: |
-| **Voice Assistant** | | | | |
-| Whisper STT | 0.30s | 0.69s | 0.30s | 0.31s |
-| Llama3.2:3b | 21.10s | 0.95s | 1.86s | 1.56s |
-| **Response Ready** | **21.40s** | **1.64s** | **2.16s** | **1.87s** |
-| **Multimodal Assistant** | | | | |
-| Whisper STT | 0.30s | 0.66s | 0.37s | 0.33s |
-| Qwen2.5-VL:3b | 39.45s | 19.16s | 19.11s | 19.04s |
-| **Response Ready** | **39.75s** | **19.82s** | **19.48s** | **19.37s** |
-
-#### Observations
-
-- Persistent Whisper STT provides consistently low transcription latency.
-- Llama 3.2 has a significant cold-start cost but drops to approximately 1–2 seconds for warm inference.
-- Qwen2.5-VL 3B is the primary latency bottleneck in the multimodal pipeline, requiring approximately 19 seconds even when warm.
-- TTS time is excluded because the pyttsx3 measurement reflects spoken response length rather than TTS inference performance.
-- These measurements establish a baseline for comparison with NVIDIA Jetson deployment.
-
-⸻
-
-#### Step 17 — Automated Benchmarking
-
-A reusable benchmarking framework is included to measure AI workload performance across different hardware platforms.
-
-Run the benchmark with:
+Run the cross-platform benchmark:
 
 ```bash
 python benchmark.py
 ```
 
-The benchmark currently measures:
-
-* Whisper speech-to-text latency
-* Llama 3.2 language model latency
-* Qwen2.5-VL 3B vision-language model latency
-* Cold-start inference latency
-* Three warm inference runs
-* Average warm inference latency
-
-The benchmark also records the execution environment, including:
-
-* OS
-* CPU architecture
-* Model name
-* Ollama model size
-* CPU/GPU execution split
-* Model context size
-
-Results are automatically appended to benchmarks/benchmark_results.csv This provides a repeatable baseline that can be executed on different edge platforms.
-
-Current baseline:
-macOS → Whisper + Llama 3.2 + Qwen2.5-VL
-
-Next target:
-NVIDIA Jetson Orin Nano → same workloads → latency, memory, GPU utilization, and power analysis.
-
-⸻
-
-#### Step 18 - Llama 3.2 Quantization Comparison
-
-```bash
-python -m experiments.benchmark_quantization
-```
-
-#### Quantization Quality Evaluation with the same prompt
-
-Llama 3.2 3B was tested using Q4_K_M and Q8_0 quantization with the same prompt and runtime configuration.
-
-| Quantization | Model Size | Cold Latency | Warm Avg |
-| --- | ---: | ---: | ---: |
-| Q4_K_M | 2.0 GB | 3.37s | 1.06s |
-| Q8_0 | 3.4 GB | 4.60s | 1.08s |
-
-The Q8_0 model increased model size by approximately 70% while providing no meaningful latency improvement in this test. Response quality was also similar for the tested prompt.
-
-For memory-constrained edge deployment, Q4_K_M currently provides the better balance of model size, latency, and output quality.
-
-#### Quantization Quality Evaluation with various types of prompts
-
-A small qualitative test set was used to compare Q4_K_M and Q8_0 across summarization, reasoning, instruction following, and structured output.
-Both models produced similar-quality responses for straightforward summarization, general questions, reasoning or instruction-following. 
-In one structured-output test, Q8_0 incorrectly identified the larger Q8 model as having lower memory usage, while Q4_K_M correctly recognized the memory-efficiency advantage of the smaller model.
-Combined with the latency and model-size measurements, these tests provide no clear justification for the additional memory cost of Q8_0 for this edge deployment.
-
-**Selected baseline: Llama 3.2 3B Q4_K_M**
-
-⸻
-
-#### Step 19 (a) - Custom Quantization
-
-Here is the plan
-1. Get Huggingface FP16 Llama3.2:3B-Instruct
-2. Convert it to GGUF using llama.cpp
-3. Quantize it to Q4_K_M and Q8_0
-4. Import quantized models to Ollama and test - Let's go!
-
-```
-Hugging Face FP16
-      ↓
-Convert to GGUF
-      ↓
-Quantize ourselves
-   ↙           ↘
-Q4_K_M       Q8_0
-   ↓           ↓
-Custom Ollama models
-
-```
-
-1) Build llama.cpp 
-```bash
-cd experiments/custom_quantization
-
-git clone https://github.com/ggml-org/llama.cpp.git
-
-cd llama.cpp
-```
-**Note: if running on ARM run command: `arch -arm64 zsh`**
-
-```bash
-cmake -S . -B build \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_OSX_ARCHITECTURES=arm64
-
-cmake --build build \
-  --target llama-quantize \
-  --config Release \
-  -j
-```
-
-2) Install Huggingface
-```bash
-cd experiments/custom_quantization
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install huggingface_hub transformers sentencepiece protobuf torch
-mkdir experiments/custom_quantization/models/Llama-3.2-3B-Instruct
-```
-**Login required for Llama-3.2-3B-Instruct**
-```bash
-hf auth login 
-cd experiments/custom_quantization/
-hf download meta-llama/Llama-3.2-3B-Instruct --local-dir models/Llama-3.2-3B-Instruct
-```
-
-3) Create GGUF 
-```bash
-python llama.cpp/convert_hf_to_gguf.py \
-    models/Llama-3.2-3B-Instruct \
-    --outfile gguf/llama-3.2-3b-instruct-f16.gguf \
-    --outtype f16
-```
-
-4) Create Q8_0 GGUF
-```bash
-./llama.cpp/build/bin/llama-quantize \
-  gguf/llama-3.2-3b-instruct-f16.gguf \
-  gguf/llama-3.2-3b-instruct-q8_0.gguf \
-  Q8_0
-```
-
-5) Create Q4_K_M GGUF
-```bash
-./llama.cpp/build/bin/llama-quantize \
-  gguf/llama-3.2-3b-instruct-f16.gguf \
-  gguf/llama-3.2-3b-instruct-q4_k_m.gguf \
-  Q4_K_M
-```
-
-Check sizes for each quantized version (gguf file) - should be like below
-```bash
-ls -lh gguf
-```
-
-| Quantized Version | Size |
-| --- | ---: |
-| llama-3.2-3b-instruct-f16.gguf | 6.0G
-| llama-3.2-3b-instruct-q4_k_m.gguf | 1.9G
-| llama-3.2-3b-instruct-q8_0.gguf | 3.2G
-
-5) Import custom models to Ollama and run locally
-```bash
-cd experiments/custom_quantization
-
-cat > Modelfile.q4 <<'EOF'
-FROM ./gguf/llama-3.2-3b-instruct-q4_k_m.gguf
-EOF
-
-cat > Modelfile.q8 <<'EOF'
-FROM ./gguf/llama-3.2-3b-instruct-q8_0.gguf
-EOF
-
-ollama create llama3.2-custom-q4 -f Modelfile.q4
-ollama create llama3.2-custom-q8 -f Modelfile.q8
-ollama show llama3.2-custom-q8:latest [ quantization        Q8_0 ]
-ollama show llama3.2-custom-q4:latest [  quantization        Q4_K_M ]
-```
-
-6) Test
-```bash
-ollama run llama3.2-custom-q8:latest "When should I prefer on-device AI over cloud AI?"
-ollama run llama3.2-custom-q4:latest "When should I prefer on-device AI over cloud AI?"
-
-```
-
-⸻
-
-#### Step 19 (b) - Custom Quantization - Benchmark
-
-Add custom models to /experiments/benchmark_quantization
-
-```bash
-
-MODELS = [
-    "llama3.2:3b",
-    "llama3.2:3b-instruct-q8_0",
-\e[1m "llama3.2-custom-q4"\e[0m ,
-\e[1m "llama3.2-custom-q8"\e[0m,
-]
-```
-
-Run quantization benchmark to validate custom models
-
-```bash
-
-cd on-device-ai-assistant
-
-# Make sure to activate correct .venv
-
-python -m experiments.benchmark_quantization
-
-```
-
-⸻
-
-#### Step 20 - Cloud deployment
-
-For benchmarking we will compare performance with cloud implementation.
-
-#### FastAPI
-
-1) Start deployment of local server with FastAPI
-```
-Client
-  ↓
-FastAPI
-  ↓
-Local Llama/Ollama
-  ↓
-JSON response
-
-```
-
-```bash
-cd on-device-ai-assistant
-source .venv/bin/activate
-python -m pip install -r cloud/requirements.txt
-uvicorn cloud.app:app --reload
-```
-
-2) Test local server is up
-```bash
-curl http://127.0.0.1:8000/health
-
-# Expected response
-# -----------------
-# {"status":"ok"}
-
-```
-
-3) Call Ollama through local server
-```bash
-curl -X POST http://127.0.0.1:8000/generate \
-  -H "Content-Type: application/json" \
-  -d '{"prompt":"Explain edge AI in one sentence."}'
-
-# Example expected response
-# --------------------------
-# {"model":"llama3.2:3b","response":"Edge AI refers to the processing of artificial intelligence tasks at the edge of a network, typically on devices such as smartphones, smart home devices, or autonomous vehicles, to reduce latency, improve real-time decision-making, and minimize data transmission requirements."}
-
-```
-
-#### Docker
-
-The FastAPI inference service can also be run inside a Docker container. This provides a portable deployment environment that can later be used on cloud infrastructure.
-
-1) Prerequisites
-- Docker Desktop
-- Ollama for local model inference
-
-```bash
-#Open Docker: open -a Docker
-#Close Docker: osascript -e 'quit app "Docker"'
-```
-
-2) Build the Container
-From the repository root:
-```bash
-docker build -f cloud/Dockerfile -t local-ai-api .
-```
-
-3) Run the Container
-```bash
-docker run --rm -p 8000:8000 local-ai-api
-```
-The FastAPI service will be available at:
-`http://localhost:8000`
-
-4) Test the Service
-Check the health endpoint:
-```bash
-curl http://127.0.0.1:8000/health
-```
-Expected response:
-```json
-{
-  "status": "ok"
-}
-```
-
-5) Test Ollama port inside Docker container
-Update `src/llm.py`
-```bash
-import os
-
-OLLAMA_URL = os.getenv(
-    "OLLAMA_URL",
-    "http://localhost:11434/api/generate",
-)
-```
-
-Re-build
-```bash
-docker build -f cloud/Dockerfile -t local-ai-api .
-```
-
-Run container
-```bash
-docker run --rm \
-  -p 127.0.0.1:8000:8000 \
-  -e OLLAMA_URL=http://host.docker.internal:11434/api/generate \
-  local-ai-api
-```
-
-Test
-```bash
-curl -X POST http://127.0.0.1:8000/generate \
-  -H "Content-Type: application/json" \
-  -d '{"prompt":"Explain edge AI concisely."}'
-```
-
-The current Docker setup containerizes the API layer. Connecting the containerized service to GPU-backed model inference is the next step toward cloud deployment.
-
-#### Local Hugging Face Inference
-Using Hugging Face Transformers and PyTorch.
-
-During local development on Apple Silicon, PyTorch uses the Metal Performance Shaders (MPS) backend for GPU acceleration.
-
-In one Terminal
-```bash
-uvicorn cloud.app:app
-```
-Open another Terminal do
-```bash
-curl -X POST http://127.0.0.1:8000/generate \
-  -H "Content-Type: application/json" \
-  -d '{"prompt":"Explain edge AI in one short sentence."}'
-```
-
-#### Create Hugging Face API 
-
-```bash
-# Make sure Docker is running
-open -a Docker
-
-#Create HF API
-docker build -f cloud/Dockerfile -t hf-ai-api .
-
-#Verify Docker image is created for HF API
-docker images | grep hf-ai-api
-
-```
-
-#### AWS GPU Deployment
-
-We will be use Hugging Face inference service on AWS EC2 with NVIDIA GPU for benchmark comparison cloud vs MAC vs Jetson Nano
-
-#### EC2 Configuration
-
-| Setting | Configuration |
-| --- | --- |
-| AMI | NVIDIA GPU-Optimized AMI |
-| Instance type | `g5.xlarge` |
-| GPU | NVIDIA A10G |
-| Key pair | RSA/ED25519 `.pem` key |
-| SSH access | My IP only |
-| Root storage | gp3 |
-| File system | None |
+Results are stored in:
 
 ```text
-Name and tags -> [you-can-choose]
-Application and OS Image -> Search for NVIDIA GPU-Optimized AMI
-Instance type -> g5.xlarge
-Key pair (login) -> Create new .pem key pair and save it locally [keep it safe]
-Network Settings
-	- Firewall (security group) -> Create security group
-	- [Check] Allow SSH traffic from - [Dropdown] My IP
-Configure Storage -> 1x [128] GIB [gp3] Root volume
-File System -> None
-```
-**Launch Instance**
-
-> GPU instances incur charges while running. Stop the instance when it is not being used.
-
-#### 1. Connect to the Instance
-
-Once the EC2 instance is running and its status checks have passed:
-
-```bash
-chmod 400 your-key.pem
-
-ssh -i your-key.pem ubuntu@<PUBLIC-IP>
+benchmarks/benchmark_results.csv
 ```
 
-Verify that the NVIDIA GPU is available:
+The benchmark currently evaluates:
 
-```bash
-nvidia-smi
-```
+- Whisper STT
+- Llama 3.2 3B
+- Qwen2.5-VL 3B
+- First-run latency
+- Subsequent-run latency
+- Runtime environment
 
-`g5.xlarge` instance should say an NVIDIA A10G GPU.
+---
 
-#### 2. Verify GPU Access from Docker
-
-Check Docker:
-
-```bash
-sudo docker --version
-```
-
-Verify that a Docker container can access the GPU:
-
-```bash
-sudo docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu24.04 nvidia-smi
-```
-
-#### 3. Clone the Repository
-
-```bash
-git clone git@github.com:hferoze/on-device-ai-assistant.git
-cd on-device-ai-assistant
-```
-
-**For a private repository, configure GitHub SSH authentication or a read-only deploy key before cloning.**
-
-#### 4. Build the Inference Container
-
-```bash
-sudo docker build -f cloud/Dockerfile -t hf-ai-api .
-```
-
-#### 5. Configure Hugging Face Authentication
-
-Create a local `.env` file:
+## Repository Structure
 
 ```text
-HF_TOKEN=<your-hugging-face-token>
+on-device-ai-assistant/
+│
+├── src/
+│   ├── assistant_multimodal.py
+│   ├── llm.py
+│   ├── memory.py
+│   │
+│   ├── audio/
+│   │   ├── recorder.py
+│   │   ├── stt.py
+│   │   └── tts.py
+│   │
+│   └── vision/
+│       ├── camera.py
+│       ├── detector.py
+│       └── describer.py
+│
+├── experiments/
+│   ├── speech-to-text/
+│   └── custom_quantization/
+│
+├── cloud/
+│   ├── app.py
+│   ├── hf_inference.py
+│   ├── benchmark_cloud.py
+│   └── Dockerfile
+│
+├── benchmarks/
+│   └── benchmark_results.csv
+│
+├── docs/
+│   ├── mac_development.md
+│   ├── benchmarking.md
+│   ├── cloud_deployment.md
+│   └── jetson_deployment.md
+│
+├── benchmark.py
+├── requirements.txt
+└── README.md
 ```
 
-The `.env` file must not be committed to Git and is excluded through `.gitignore`.
+---
 
-#### 6. Start GPU inference server
-
-```bash
-sudo docker run --rm --gpus all --env-file .env -p 8000:8000 hf-ai-api
-```
-
-Hugging Face downloads/caches the model and PyTorch loads the model weights at startup and then uvicorn starts the FastAPI inference server.
-
-#### 7. Test Inference
-
-Open another Terminal -> Start SSH session to the same EC2 instance:
-
-```bash
-curl -X POST http://127.0.0.1:8000/generate -H "Content-Type: application/json" -d '{"prompt":"Explain edge AI in one short sentence."}'
-```
+## Current Status
 
 ```text
-Client
-  ↓
-FastAPI
-  ↓
-Docker
-  ↓
-Hugging Face Transformers
-  ↓
-PyTorch / CUDA
-  ↓
-NVIDIA A10G
-  ↓
-Llama 3.2 3B
+Local Multimodal Assistant      ██████████  Complete
+Model Optimization              ██████████  Complete
+Cloud GPU Deployment            ██████████  Complete
+Jetson Edge Deployment          ███████░░░  In Progress
+Cloud vs. Edge Analysis         ░░░░░░░░░░  Planned
+Smart Glasses Architecture      ░░░░░░░░░░  Planned
 ```
 
-#### 8. Shut Down the GPU Instance
-
-When testing is complete, exit the SSH sessions:
-
-```bash
-exit
-```
-
-Then stop the instance from the AWS console:
-
-```text
-EC2 → Instances → select instance → Instance state → Stop instance
-```
-
-Stopping the instance prevents additional EC2 GPU compute charges but keeps the the instance and its EBS storage for future benchmarking.
-
-#### Cloud GPU Performance
-
-Initial cloud inference measurements were collected on an AWS EC2 `g5.xlarge` instance using the same Llama 3.2 3B Instruct model used during local development.
-
-#### Test Environment
-
-| Component | Configuration |
-| --- | --- |
-| Cloud | AWS EC2 |
-| Instance | `g5.xlarge` |
-| GPU | NVIDIA A10G |
-| GPU Memory | 23 GB |
-| Model | Llama 3.2 3B Instruct |
-| Model Precision | FP16 |
-| Inference Framework | Hugging Face Transformers + PyTorch |
-| Compute Backend | CUDA |
-| Deployment | Docker + FastAPI |
-
-#### Inference Latency
-
-On Terminal 1
-```bash
-# Connect to the Instance
-ssh -i your-key.pem ubuntu@<PUBLIC-IP>
-
-#Start inference server
-sudo docker run --rm --gpus all --env-file .env -p 8000:8000 hf-ai-api
-
-```
-
-On Terminal 2
-```bash
-time curl -s -X POST http://127.0.0.1:8000/generate \
-      -H "Content-Type: application/json" \ 
-      -d '{"prompt":"Explain edge AI in one short sentence."}'
-```
-
-On Terminal 3
-```bash
-watch -n 0.5 nvidia-smi
-```
-
-**Latency Results**
-
-| Measurement | Latency |
-| --- | ---: |
-| First request | 6.083s |
-| Warm request 1 | 1.288s |
-| Warm request 2 | 1.283s |
-| **Warm average** | **1.286s** |
-
-The first request includes additional runtime warm-up overhead. Subsequent requests demonstrate steady-state inference performance with the model already resident in GPU memory.
-
-**GPU Observations**
-
-| Metric | Observed Value |
-| --- | ---: |
-| GPU memory | ~6.5 GB |
-| GPU utilization during inference | ~62% |
-| Power during inference | ~129 W |
-| GPU temperature | ~39°C |
-
-GPU utilization and power are observational samples captured with `watch -n 0.5 nvidia-smi` during inference rather than time-averaged benchmark measurements.
-
-#### Initial Observation
-
-The cloud deployment shows approximately **1.29-second steady-state response latency** for Llama 3.2 3B FP16 inference on an NVIDIA A10G.
-
-This will be cloud GPU baseline that will later be compared against local and NVIDIA Jetson inference.
-
-#### Automated benchmark
-
-With the Docker running, run the following command
-
-```bash
-python3 cloud/benchmark_cloud.py
-```
-
-Results should look like this
-```text
-Cloud Inference Benchmark
-========================================
-First request: 5.99s
-Warm 1: 1.23s
-Warm 2: 1.23s
-Warm 3: 1.22s
-Warm average: 1.23s
-```
-
-#
-
-### Setup Instructions
-
-Requirements
-
-* Python 3.x
-* Ollama
-* llama3.2:3b
-* whisper.cpp
-* pyttsx3
-* sounddevice
-* scipy
-* pywhispercpp
-* requests
-* opencv-python
-* ultralytics
-* psutils
-* Docker
-
-Python Environment
-
-```bash
-arch -arm64 zsh \[Make sure arm64 for MAC M1\]
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-```
-
-Ollama
-
-Install from the official Ollama website
-
-Whisper
-
-```bash
-git clone https://github.com/ggml-org/whisper.cpp.git
-cd whisper.cpp
-sh ./models/download-ggml-model.sh base.en [ Downloads base model ]
-cmake -B build
-cmake --build build -j --config Release
-```
+**Current milestone:** complete and optimize the full multimodal assistant on NVIDIA Jetson Orin Nano Super.
