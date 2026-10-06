@@ -678,3 +678,80 @@ before final performance numbers are published.
 Jetson latency, GPU utilization, memory, power observations, and cross-platform comparisons are maintained in:
 
 [Benchmarking & Optimization](benchmarking.md)
+
+## Running the End-to-End Assistant on Jetson
+
+Running the complete assistant on the Jetson required a few platform-specific changes beyond the basic model deployment.
+
+### Audio Dependencies
+
+Install PortAudio for microphone input:
+
+```bash
+sudo apt update
+sudo apt install -y libportaudio2 portaudio19-dev
+```
+
+### Microphone Selection
+If an external audio device such as a USB headset is connected and the default microphone does not work, list the available audio devices:
+```bash
+python -c "import sounddevice as sd; print('Default:', sd.default.device); print(sd.query_devices())"
+```
+For example, the Logitech USB headset appeared as:
+```
+24 Logitech USB Headset: Audio (hw:2,0), ALSA (1 in, 2 out)
+29 default, ALSA (128 in, 128 out)
+```
+Although device 29 was reported as the default, microphone recording did not work correctly through that device. Selecting device 24 directly solved the problem.
+For testing, the input device can be specified in recorder.py:
+
+```bash
+with sd.InputStream(
+    device=24,
+    samplerate=SAMPLE_RATE,
+    channels=CHANNELS,
+    dtype="int16",
+    blocksize=block_size,
+):
+```
+
+Note: Device IDs are assigned by the operating system and may change after rebooting or reconnecting hardware. Hard-coding device 24 is therefore only a temporary solution. A future improvement is to select the microphone by device name or configuration.
+
+### Text-to-Speech on Jetson
+The existing pyttsx3 implementation did not reliably produce audio on the Jetson even though the underlying eSpeak engine worked correctly.
+Install eSpeak:
+
+```bash
+sudo apt install -y espeak
+```
+The application uses direct eSpeak playback on Jetson while retaining pyttsx3 on the development platform.
+
+### CUDA Whisper Backend
+The original pywhispercpp installation ran Whisper primarily on the CPU and produced very high transcription latency.
+A CUDA-enabled build of whisper.cpp was therefore used on Jetson. The application detects the platform and selects the appropriate STT backend:
+
+```
+Mac             -> PersistentSTT / pywhispercpp
+Jetson          -> WhisperCudaSTT / CUDA whisper.cpp
+```
+
+This significantly reduced Whisper transcription latency on Jetson. Detailed performance results are documented in [Benchmarking & Optimization](benchmarking.md)
+
+### Unified Memory and Model Lifecycle
+The Jetson Orin Nano uses unified system/GPU memory. Running Whisper, Llama, and Qwen-VL in the same application exposed an important resource-management constraint.
+Repeated VLM requests followed by another CUDA Whisper invocation occasionally caused whisper-cli to abort with SIGABRT. The same audio file could be processed successfully when Whisper was run independently, indicating that the failure was related to runtime/resource state rather than the audio input itself.
+The application became stable when Qwen-VL was explicitly unloaded from Ollama after each vision request on Jetson:
+
+```
+Whisper -> Qwen-VL -> unload Qwen-VL -> Whisper
+```
+
+This unloading behavior is Jetson-specific. On systems with more available memory, keeping the VLM resident provides much faster subsequent inference.
+The tradeoff is increased VLM cold-start latency on Jetson because the model must be loaded again for the next vision request.
+This is an area for future optimization. Possible experiments include:
+- testing smaller VLMs;
+- reducing model/context memory requirements;
+- improving model lifecycle management;
+- investigating whether both STT and VLM workloads can coexist reliably without unloading.
+
+
