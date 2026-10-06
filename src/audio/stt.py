@@ -1,7 +1,7 @@
 from pathlib import Path
 from threading import Lock
 import subprocess
-
+import platform
 from pywhispercpp.model import Model
 
 
@@ -37,6 +37,7 @@ class WhisperCudaSTT:
                 "-m", str(self.model),
                 "-f", str(audio_file),
                 "--no-prints",
+                "-nt",
             ],
             capture_output=True,
             text=True,
@@ -96,3 +97,13 @@ class PersistentSTT:
             raise RuntimeError("Whisper returned an empty transcription.")
 
         return text
+        
+def create_stt():
+    """Create the appropriate STT backend for the current platform."""
+
+    if platform.system() == "Linux" and platform.machine() == "aarch64":
+        print("[STT] Backend: CUDA whisper.cpp")
+        return WhisperCudaSTT()
+
+    print("[STT] Backend: PersistentSTT")
+    return PersistentSTT()

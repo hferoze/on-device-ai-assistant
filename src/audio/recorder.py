@@ -47,6 +47,7 @@ def record_audio(output_file: Path = DEFAULT_OUTPUT_FILE, chunk_callback=None,) 
     recording_start = time.perf_counter()
 
     with sd.InputStream(
+        device=24,
         samplerate=SAMPLE_RATE,
         channels=CHANNELS,
         dtype="int16",

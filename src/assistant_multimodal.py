@@ -2,12 +2,13 @@ import time
 
 from src.llm import generate_response
 from src.memory import ConversationMemory
-from src.audio.stt import PersistentSTT
+from src.audio.stt import create_stt
 from src.audio.recorder import record_audio
 from src.audio.tts import speak
 from src.vision.camera import capture_frame
 from src.vision.describer import describe_scene
-
+import platform
+import requests
 
 VISION_COMMANDS = (
     "what do you see",
@@ -17,6 +18,9 @@ VISION_COMMANDS = (
     "in the image",
     "from the image"
 )
+
+def is_jetson():
+    return platform.system() == "Linux" and platform.machine() == "aarch64"
 
 def is_vision_request(question: str) -> bool:
     question = question.lower().strip()
@@ -30,7 +34,7 @@ def main() -> None:
     memory = ConversationMemory(max_messages=6)
 
     # Loaded once and reused.
-    stt = PersistentSTT()
+    stt = create_stt()
 
     print("On-Device AI Assistant")
     print("Press Ctrl+C to quit.")
@@ -59,12 +63,25 @@ def main() -> None:
             is_vision_pipeline = False
             if is_vision_request(question):
                 is_vision_pipeline = True
-                
                 print("[Assistant] Capturing image...")
                 image_path = capture_frame()
 
                 print("[Assistant] Analyzing image...")
                 response = describe_scene(image_path, question)
+
+                if is_jetson():
+                    # Free Qwen-VL GPU/unified memory before the next interaction.
+                    requests.post(
+                        "http://localhost:11434/api/generate",
+                        json={
+                            "model": "qwen2.5vl:3b",
+                            "keep_alive": 0,
+                        },
+                        timeout=30,
+                    ).raise_for_status()
+
+                    print("[Assistant] Qwen-VL unloaded")
+                
             else:
                 prompt = memory.build_prompt(question)
 

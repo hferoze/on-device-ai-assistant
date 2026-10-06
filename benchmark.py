@@ -9,7 +9,7 @@ import re
 import subprocess
 import requests
 
-from src.audio.stt import PersistentSTT, WhisperCudaSTT
+from src.audio.stt import create_stt
 from src.llm import generate_response
 from src.vision.describer import describe_scene
 
@@ -174,17 +174,6 @@ def print_system_info():
     print("\nOllama Status")
     print("-------------")
     print(get_ollama_status())
-
-def create_stt():
-    system = platform.system()
-    architecture = platform.machine()
-
-    if system == "Linux" and architecture == "aarch64":
-        print("STT backend: CUDA whisper.cpp")
-        return WhisperCudaSTT()
-
-    print("STT backend: pywhispercpp")
-    return PersistentSTT()
 
 def unload_ollama_model(model):
     try:
