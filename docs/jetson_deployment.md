@@ -2,7 +2,7 @@
 
 This document describes the deployment of the On-Device AI Assistant on an NVIDIA Jetson Orin Nano Super Developer Kit.
 
-The objective of this phase is not only to run the existing AI workloads on Jetson, but also to identify and resolve platform-specific performance bottlenecks involving GPU acceleration, unified memory, model loading, and power constraints.
+The end-to-end multimodal assistant has been deployed and validated on Jetson. This guide documents the reproducible setup, CUDA acceleration, audio integration, and memory-management workarounds. Cloud-versus-edge analysis and additional controlled performance testing remain future work.
 
 ## Test Platform
 
@@ -22,7 +22,7 @@ The objective of this phase is not only to run the existing AI workloads on Jets
 
 ---
 
-## 1. Verify the Jetson Environment
+## Verify the Jetson Environment
 
 ```bash
 uname -m
@@ -38,7 +38,7 @@ aarch64
 
 ---
 
-## 2. Install and Verify CUDA
+## Install and Verify CUDA
 
 Check whether the CUDA compiler is already available:
 
@@ -87,7 +87,7 @@ nvcc --version
 
 ---
 
-## 3. Configure Read-Only GitHub Access
+## Configure Read-Only GitHub Access
 
 The Jetson uses a read-only GitHub deploy key. Development changes are pushed from the primary development machine rather than granting the deployment device write access to the repository.
 
@@ -132,7 +132,7 @@ git status
 
 ---
 
-## 4. Create the Python Environment
+## Create the Python Environment
 
 Install Python virtual-environment support:
 
@@ -172,6 +172,11 @@ pip install \
 PyTorch must have CUDA support for GPU workloads:
 
 ```bash
+# Install a Jetson/aarch64-compatible CUDA-enabled PyTorch build
+# matching your JetPack release. Follow NVIDIA's Jetson PyTorch
+# installation guidance; do not use generic x86 CUDA wheels.
+
+#For example
 pip install torch torchvision \
   --index-url https://download.pytorch.org/whl/cu132
 ```
@@ -194,7 +199,7 @@ pip install ultralytics
 
 ---
 
-## 5. Install Ollama
+## Install Ollama
 
 Install Ollama:
 
@@ -218,7 +223,7 @@ ollama pull qwen2.5vl:3b
 
 ---
 
-## 6. Verify GPU Inference
+## Verify GPU Inference
 
 The Jetson Orin Nano uses unified memory. Available system memory therefore directly affects how much memory is available for GPU inference.
 
@@ -272,7 +277,7 @@ This demonstrates an important edge-deployment constraint:
 
 ---
 
-## 7. Monitor Jetson Performance
+## Monitor Jetson Performance
 
 During inference:
 
@@ -293,7 +298,7 @@ These values are observational measurements rather than controlled power benchma
 
 ---
 
-## 8. Configure Swap
+## Configure Swap
 
 The 8 GB Jetson configuration operates close to its physical-memory limit when running multimodal models.
 
@@ -334,32 +339,7 @@ tail -n 3 /etc/fstab
 
 ---
 
-# Benchmarking
-
-## 9. Manual Llama Sanity Test
-
-A preliminary command-line timing test was performed with:
-
-```bash
-time ollama run llama3.2:3b \
-  "Explain edge AI in one short sentence."
-```
-
-Results:
-
-| Run | Jetson |
-| --- | ---: |
-| First run | 9.651 s |
-| Subsequent 1 | 2.438 s |
-| Subsequent 2 | 2.128 s |
-| Subsequent 3 | 2.222 s |
-| Subsequent average | 2.263 s |
-
-These measurements include the lifetime of the Ollama CLI command and terminal output and therefore are **not directly comparable** with the automated benchmark measurements.
-
----
-
-## 10. Prepare Benchmark Assets
+## Prepare Benchmark Assets
 
 The automated benchmark uses fixed inputs so that platforms can be compared using the same workloads.
 
@@ -374,7 +354,7 @@ The same files should be used on every platform.
 
 ---
 
-## 11. Install the Whisper Model
+## Install the Whisper Model
 
 Clone whisper.cpp:
 
@@ -399,32 +379,9 @@ models/ggml-small.en.bin
 
 ---
 
-# Whisper GPU Optimization
+## Whisper GPU Optimization
 
-## 12. Initial Whisper Performance Problem
-
-The original Jetson benchmark used `pywhispercpp`.
-
-Initial results:
-
-| Run | Latency |
-| --- | ---: |
-| First run | 31.73 s |
-| Subsequent average | 31.73 s |
-
-During inference, `tegrastats` showed:
-
-```text
-GR3D_FREQ 0%
-```
-
-while multiple CPU cores were near 100%.
-
-This demonstrated that the installed Python Whisper path was running primarily on the CPU.
-
----
-
-## 13. Compile whisper.cpp with CUDA
+## Compile whisper.cpp with CUDA
 
 Install the build tools:
 
@@ -458,7 +415,7 @@ while `tegrastats` showed GPU activity and substantially lower CPU utilization.
 
 ---
 
-## 14. Platform-Aware STT Backend
+## Platform-Aware STT Backend
 
 The benchmark now automatically chooses the appropriate STT backend.
 
@@ -490,39 +447,9 @@ This keeps a single benchmark harness while allowing the Jetson to use its optim
 
 ---
 
-## 15. CUDA Whisper Results
+## Memory-Aware Benchmark Execution
 
-Optimized Jetson result:
-
-| Run | Latency |
-| --- | ---: |
-| First run | 2.08 s |
-| Subsequent 1 | 1.20 s |
-| Subsequent 2 | 1.22 s |
-| Subsequent 3 | 1.22 s |
-| **Subsequent average** | **1.21 s** |
-
-Compared with the original CPU path:
-
-```text
-31.73 s → 1.21 s
-```
-
-This is approximately a:
-
-```text
-26× reduction in subsequent-run latency
-```
-
-The result demonstrates the importance of verifying the actual execution backend rather than assuming that an installed AI framework is using the GPU.
-
-> Note: `WhisperCudaSTT` currently launches the whisper.cpp CLI for each transcription. Therefore these subsequent runs are not equivalent to a permanently resident Whisper model. They still include process/model initialization, although filesystem and OS caching can improve later runs.
-
----
-
-# Memory-Aware Benchmark Execution
-
-## 16. Sequential Model Loading
+## Sequential Model Loading
 
 Running Whisper, Llama, and Qwen2.5-VL within the same benchmark process initially caused CUDA out-of-memory failures.
 
@@ -579,51 +506,7 @@ This is not simply benchmark housekeeping. It represents an important deployment
 
 ---
 
-# Jetson Benchmark Results
-
-## 17. Current Results
-
-Current Jetson results:
-
-| Component | First Run | Subsequent Avg |
-| --- | ---: | ---: |
-| Whisper small.en — CUDA | **2.08 s** | **1.21 s** |
-| Llama 3.2 3B | **6.72 s** | **1.75 s** |
-| Qwen2.5-VL 3B | **42.38 s** | **0.89 s** |
-
-### Cold-Start Variability
-
-Ollama model first-run latency varied substantially between benchmark runs.
-
-For example, Llama first-run measurements included:
-
-```text
-6.72 s
-34.86 s
-```
-
-while subsequent inference remained much more stable:
-
-```text
-~1.7–1.9 s
-```
-
-Qwen2.5-VL first-run latency also varied significantly.
-
-This suggests that first-run measurements are strongly influenced by factors such as:
-
-- model loading
-- filesystem/page cache state
-- CUDA initialization
-- available unified memory
-- previous model residency
-- Ollama runtime state
-
-For final reporting, multiple independent cold-start trials should be collected and summarized separately from steady-state inference latency.
-
----
-
-# Power Mode and Throttling
+## Power Mode and Throttling
 
 The Jetson was switched to:
 
@@ -648,38 +531,19 @@ before final performance numbers are published.
 
 ---
 
-# Key Findings So Far
-
-1. **GPU availability does not guarantee GPU execution.**  
-   The original Whisper Python path ran almost entirely on the CPU despite CUDA being installed.
-
-2. **CUDA optimization dramatically improved STT performance.**  
-   Moving Whisper to a CUDA-enabled whisper.cpp backend reduced subsequent-run latency from approximately 31.7 seconds to approximately 1.2 seconds.
-
-3. **Unified memory is a major deployment constraint.**  
-   Memory consumed by desktop applications can determine whether Ollama can fully offload a model to the GPU.
-
-4. **Model lifecycle management matters on edge devices.**  
-   Explicitly unloading models is necessary when sequentially running multiple multimodal workloads within an 8 GB memory budget.
-
-5. **Steady-state latency is considerably more stable than first-run latency.**  
-   Ollama model-loading times vary substantially depending on system state.
-
-6. **Swap improves robustness, not GPU capacity.**  
-   NVMe swap helps prevent crashes but does not provide equivalent memory for CUDA model offloading.
-
-7. **Profiling is essential.**  
-   `tegrastats`, `ollama ps`, CUDA verification, and benchmark instrumentation exposed performance problems that latency measurements alone could not explain.
-
----
-
 ## Performance Results
+
+Detailed latency tables and comparisons are maintained only in the benchmarking document.
+
 
 Jetson latency, GPU utilization, memory, power observations, and cross-platform comparisons are maintained in:
 
 [Benchmarking & Optimization](benchmarking.md)
 
 ## Running the End-to-End Assistant on Jetson
+
+**Status: complete for project v1.** The assistant supports microphone input, Whisper transcription, text/vision routing, local model inference, and spoken responses on Jetson.
+
 
 Running the complete assistant on the Jetson required a few platform-specific changes beyond the basic model deployment.
 
@@ -693,6 +557,7 @@ sudo apt install -y libportaudio2 portaudio19-dev
 ```
 
 ### Microphone Selection
+
 If an external audio device such as a USB headset is connected and the default microphone does not work, list the available audio devices:
 ```bash
 python -c "import sounddevice as sd; print('Default:', sd.default.device); print(sd.query_devices())"
@@ -703,9 +568,9 @@ For example, the Logitech USB headset appeared as:
 29 default, ALSA (128 in, 128 out)
 ```
 Although device 29 was reported as the default, microphone recording did not work correctly through that device. Selecting device 24 directly solved the problem.
-For testing, the input device can be specified in recorder.py:
+For testing, the input device can be specified in `src/audio/recorder.py` (Python example):
 
-```bash
+```python
 with sd.InputStream(
     device=24,
     samplerate=SAMPLE_RATE,
@@ -727,6 +592,7 @@ sudo apt install -y espeak
 The application uses direct eSpeak playback on Jetson while retaining pyttsx3 on the development platform.
 
 ### CUDA Whisper Backend
+
 The original pywhispercpp installation ran Whisper primarily on the CPU and produced very high transcription latency.
 A CUDA-enabled build of whisper.cpp was therefore used on Jetson. The application detects the platform and selects the appropriate STT backend:
 
@@ -738,6 +604,7 @@ Jetson          -> WhisperCudaSTT / CUDA whisper.cpp
 This significantly reduced Whisper transcription latency on Jetson. Detailed performance results are documented in [Benchmarking & Optimization](benchmarking.md)
 
 ### Unified Memory and Model Lifecycle
+
 The Jetson Orin Nano uses unified system/GPU memory. Running Whisper, Llama, and Qwen-VL in the same application exposed an important resource-management constraint.
 Repeated VLM requests followed by another CUDA Whisper invocation occasionally caused whisper-cli to abort with SIGABRT. The same audio file could be processed successfully when Whisper was run independently, indicating that the failure was related to runtime/resource state rather than the audio input itself.
 The application became stable when Qwen-VL was explicitly unloaded from Ollama after each vision request on Jetson:
@@ -755,3 +622,14 @@ This is an area for future optimization. Possible experiments include:
 - investigating whether both STT and VLM workloads can coexist reliably without unloading.
 
 
+
+
+### Start the Assistant
+
+From the repository root, with the virtual environment active and Ollama running:
+
+```bash
+python -m src.assistant_multimodal
+```
+
+The microphone device ID shown above is an example, not a portable default. For performance measurements and known limitations, see [Benchmarking & Optimization](benchmarking.md).

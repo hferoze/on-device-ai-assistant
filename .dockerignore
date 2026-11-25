@@ -7,3 +7,22 @@ recordings/
 benchmarks/
 experiments/custom_quantization/models/
 experiments/custom_quantization/gguf/
+# Credentials
+.env
+.env.*
+.aws/
+**/.aws/
+*.pem
+*.key
+
+# Local artifacts
+.DS_Store
+gitleaks-report.json
+
+# Downloaded models and dependencies
+*.gguf
+*.safetensors
+*.bin
+*.pt
+experiments/speech-to-text/whisper.cpp/
+experiments/custom_quantization/llama.cpp/

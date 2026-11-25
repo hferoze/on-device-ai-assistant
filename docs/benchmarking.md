@@ -121,7 +121,7 @@ Given the significantly smaller memory footprint, the selected edge baseline is:
 
 # Custom Quantization
 
-To understand the complete model optimization pipeline, the original Hugging Face model was converted and quantized directly.
+To understand the complete model optimization pipeline, the original Hugging Face model was converted and quantized directly. A standalone procedure is also available in [Custom Quantization](../experiments/custom_quantization/README.md).
 
 ```text
 Hugging Face FP16
@@ -239,7 +239,7 @@ Approximate output sizes:
 
 ---
 
-# Import into Ollama
+## Import into Ollama
 
 Create `Modelfile.q4`:
 
@@ -269,7 +269,7 @@ ollama show llama3.2-custom-q8:latest
 
 ---
 
-# Custom Quantization Benchmark
+## Custom Quantization Benchmark
 
 Final measurements:
 
@@ -307,45 +307,6 @@ The same project workloads are evaluated across three deployment environments:
 ```
 
 The objective is to compare practical AI deployment behavior rather than perform a strict GPU microbenchmark.
-
----
-
-# macOS Baseline
-
-## Environment
-
-| Component | Configuration |
-| --- | --- |
-| Platform | Apple Silicon Mac |
-| Architecture | arm64 |
-| Runtime | Ollama |
-| LLM | Llama 3.2 3B |
-| VLM | Qwen2.5-VL 3B |
-| STT | Whisper small.en |
-| TTS | pyttsx3 |
-
-## Voice Assistant
-
-| Component | First Run | Subsequent 1 | Subsequent 2 | Subsequent 3 |
-| --- | ---: | ---: | ---: | ---: |
-| Whisper | 0.30 s | 0.69 s | 0.30 s | 0.31 s |
-| Llama 3.2 | 21.10 s | 0.95 s | 1.86 s | 1.56 s |
-| **Response Ready** | **21.40 s** | **1.64 s** | **2.16 s** | **1.87 s** |
-
-## Multimodal Assistant
-
-| Component | First Run | Subsequent 1 | Subsequent 2 | Subsequent 3 |
-| --- | ---: | ---: | ---: | ---: |
-| Whisper | 0.30 s | 0.66 s | 0.37 s | 0.33 s |
-| Qwen2.5-VL | 39.45 s | 19.16 s | 19.11 s | 19.04 s |
-| **Response Ready** | **39.75 s** | **19.82 s** | **19.48 s** | **19.37 s** |
-
-### Observations
-
-- Persistent Whisper provides low transcription latency.
-- Llama 3.2 has significant first-run overhead but drops to approximately 1–2 seconds for subsequent inference.
-- Qwen2.5-VL is the primary latency bottleneck in the Mac multimodal pipeline.
-- TTS is excluded because `pyttsx3` timing largely reflects playback duration.
 
 ---
 
@@ -492,9 +453,9 @@ After enabling CUDA Whisper and introducing explicit model lifecycle management:
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Whisper CUDA | 2.08 s | 1.20 s | 1.22 s | 1.22 s | **1.21 s** |
 | Llama 3.2 | 6.72 s | 1.95 s | 1.79 s | 1.52 s | **1.75 s** |
-| Qwen2.5-VL | 42.38 s | 0.91 s | 0.88 s | 0.87 s | **0.89 s*** |
+| Qwen2.5-VL | 42.38 s | 0.91 s | 0.88 s | 0.87 s | **0.89 s (unvalidated)*** |
 
-\* The Qwen2.5-VL result requires additional validation before being considered final.
+\* The Qwen2.5-VL subsequent-run measurement is **not validated** and must not be used as a performance claim. The end-to-end Jetson assistant unloads the VLM after vision requests to avoid memory-related failures, so these subsequent-run figures do not represent the repeated-request experience of that application. Confirm prompt, image, output tokens, model residency, and timing boundaries before publishing a comparative VLM result.
 
 ---
 
@@ -603,9 +564,9 @@ The Jetson result demonstrates the effect of selecting an architecture-appropria
 | Platform | Model | Subsequent Latency |
 | --- | --- | ---: |
 | Mac | Qwen2.5-VL 3B | ~19.1 s |
-| Jetson | Qwen2.5-VL 3B | **~0.89 s*** |
+| Jetson | Qwen2.5-VL 3B | Not yet validated |
 
-\* The Jetson result remains under investigation and should not yet be interpreted as evidence that Jetson is approximately 20× faster than the Mac.
+The provisional Jetson VLM measurement is retained above for auditability but excluded from cross-platform conclusions.
 
 ---
 
@@ -633,6 +594,8 @@ Final comparison dimensions will include:
 ---
 
 # Remaining Benchmark Work
+
+**Deployment status:** The end-to-end Jetson assistant is complete for v1. The remaining items below concern benchmark validation and future cloud-versus-edge analysis, not deployment completion.
 
 - [x] Establish Mac baseline
 - [x] Quantization comparison

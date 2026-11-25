@@ -1,6 +1,6 @@
 # macOS Development
 
-This document covers the original development of the On-Device AI Assistant on Apple Silicon.
+This document covers the original development of the On-Device AI Assistant on Apple Silicon. The local multimodal implementation is complete; the later Jetson deployment is documented separately.
 
 The Mac environment was used to build and validate the complete local assistant before deploying the workloads to cloud GPU infrastructure and NVIDIA Jetson hardware.
 
@@ -473,3 +473,8 @@ This allows the assistant to reason about the complete image instead of relying 
 ```
 
 The completed local implementation became the baseline for subsequent cloud and NVIDIA Jetson deployment.
+
+## Related Documentation
+
+- [Benchmarking & Optimization](benchmarking.md) — measured latency and quantization results
+- [Jetson Deployment](jetson_deployment.md) — edge deployment and platform-specific changes

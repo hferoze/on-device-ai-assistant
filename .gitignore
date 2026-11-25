@@ -252,3 +252,20 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local artifacts
+.DS_Store
+gitleaks-report.json
+
+# Credentials and private keys
+.env.*
+!.env.example
+.aws/
+*.pem
+*.key
+
+# Downloaded AI models
+*.gguf
+*.safetensors
+*.pth
+*.onnx

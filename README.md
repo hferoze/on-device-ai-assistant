@@ -161,26 +161,28 @@ NVIDIA A10G
 
 AWS `g5.xlarge` provides the cloud GPU baseline.
 
-### Phase 4 — NVIDIA Jetson Edge Deployment 🚧
+### Phase 4 — NVIDIA Jetson Edge Deployment ✅
 
-Current platform:
+**Platform: NVIDIA Jetson Orin Nano Super**
 
-**NVIDIA Jetson Orin Nano Super**
+Successfully deployed the complete multimodal AI assistant on Jetson.
 
-Completed so far:
+Completed:
 
-- JetPack / CUDA environment
-- CUDA-enabled PyTorch
-- Ollama GPU inference
-- CUDA-enabled whisper.cpp
-- Platform-aware STT backend
-- Unified-memory optimization
-- Sequential model lifecycle management
-- Initial Jetson benchmarks
+- JetPack / CUDA environment setup
+- CUDA-enabled PyTorch and Ollama GPU inference
+- CUDA-accelerated Whisper speech recognition
+- Platform-aware STT and TTS backends
+- Live microphone input and automatic silence detection
+- Llama 3.2 3B conversational inference
+- Qwen2.5-VL 3B camera-based visual reasoning
+- Conversation memory
+- Offline speech output using eSpeak
+- Unified-memory and model lifecycle management
+- End-to-end validation across repeated voice and vision interactions
+- Jetson performance benchmarking
 
-Current focus:
-
-**Running and optimizing the complete multimodal assistant on Jetson.**
+**Outcome:** A fully functional, locally running multimodal AI assistant on NVIDIA Jetson Orin Nano Super, without cloud inference.
 
 ### Phase 5 — Cloud vs. Edge Analysis
 
@@ -264,7 +266,7 @@ Running Whisper, Llama, and Qwen2.5-VL sequentially can approach the limits of a
 
 The benchmark therefore explicitly releases or unloads models between workloads.
 
-### Quantization matters more than raw model size
+### Quantization enables memory-efficient edge deployment
 
 Llama 3.2 3B Q4_K_M provided similar latency and observed response quality to Q8_0 while requiring substantially less memory.
 
@@ -378,9 +380,10 @@ on-device-ai-assistant/
 Local Multimodal Assistant      ██████████  Complete
 Model Optimization              ██████████  Complete
 Cloud GPU Deployment            ██████████  Complete
-Jetson Edge Deployment          ███████░░░  In Progress
+Jetson Edge Deployment          ██████████  Complete
 Cloud vs. Edge Analysis         ░░░░░░░░░░  Planned
-Smart Glasses Architecture      ░░░░░░░░░░  Planned
 ```
 
-**Current milestone:** complete and optimize the full multimodal assistant on NVIDIA Jetson Orin Nano Super.
+**Current milestone:** Complete the cloud vs. edge performance and deployment tradeoff analysis.
+
+**Project v1:** End-to-end multimodal AI assistant successfully deployed on NVIDIA Jetson Orin Nano Super.

@@ -103,7 +103,7 @@ Run:
 
 ```bash
 docker run --rm \
-  -p 8000:8000 \
+  -p 127.0.0.1:8000:8000 \
   local-ai-api
 ```
 
@@ -229,7 +229,7 @@ git clone git@github.com:hferoze/on-device-ai-assistant.git
 cd on-device-ai-assistant
 ```
 
-For a private repository, configure GitHub authentication before cloning.
+For a private repository, configure GitHub authentication before cloning. For a public repository, HTTPS cloning is also available.
 
 ---
 
@@ -245,7 +245,7 @@ sudo docker build \
 
 # Hugging Face Authentication
 
-Create:
+Create a local, untracked environment file:
 
 ```text
 .env
@@ -257,7 +257,7 @@ Containing:
 HF_TOKEN=<your-token>
 ```
 
-`.env` must remain excluded from Git.
+`.env` must remain excluded from Git. Do not expose the API port publicly without authentication and network restrictions.
 
 ---
 
@@ -267,7 +267,7 @@ HF_TOKEN=<your-token>
 sudo docker run --rm \
   --gpus all \
   --env-file .env \
-  -p 8000:8000 \
+  -p 127.0.0.1:8000:8000 \
   hf-ai-api
 ```
 
@@ -301,54 +301,7 @@ curl -X POST http://127.0.0.1:8000/generate \
 
 ---
 
-# Cloud Performance
-
-## Environment
-
-| Component | Configuration |
-| --- | --- |
-| Instance | AWS `g5.xlarge` |
-| GPU | NVIDIA A10G |
-| GPU memory | ~23 GB |
-| Model | Llama 3.2 3B Instruct |
-| Precision | FP16 |
-| Framework | Hugging Face Transformers |
-| Runtime | PyTorch / CUDA |
-| Deployment | Docker + FastAPI |
-
-## Latency
-
-| Measurement | Latency |
-| --- | ---: |
-| First request | 6.083 s |
-| Subsequent 1 | 1.288 s |
-| Subsequent 2 | 1.283 s |
-| **Subsequent average** | **1.286 s** |
-
-The first request includes additional initialization/warm-up overhead.
-
----
-
-# GPU Observations
-
-| Metric | Observed |
-| --- | ---: |
-| GPU memory | ~6.5 GB |
-| GPU utilization | ~62% |
-| Power | ~129 W |
-| Temperature | ~39 °C |
-
-These values were observational samples captured using:
-
-```bash
-watch -n 0.5 nvidia-smi
-```
-
-They should not be interpreted as time-averaged power measurements.
-
----
-
-# Automated Cloud Benchmark
+## Automated Cloud Benchmark
 
 With the inference server running:
 
@@ -384,17 +337,10 @@ Stopping an instance stops GPU compute charges but EBS storage may continue to i
 
 ---
 
-# Result
-
-The AWS A10G deployment establishes the project's cloud GPU baseline:
-
-**~1.29 seconds steady-state Llama 3.2 3B FP16 response latency**
-
-The result will ultimately be evaluated against the local Mac and Jetson edge deployments.
-
-Because the cloud deployment uses FP16 Hugging Face/PyTorch while the local and Jetson deployments use quantized Ollama models, this represents a system/deployment comparison rather than a strict hardware benchmark.
-
 ## Performance Results
+
+The AWS A10G cloud baseline is complete. Detailed latency, GPU utilization, and power observations are maintained in one place:
+
 
 Cloud performance measurements and cross-platform comparisons are maintained in:
 
